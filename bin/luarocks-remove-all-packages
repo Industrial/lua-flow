@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+luarocks list --porcelain \
+  | awk '{print $1}' \
+  | xargs -n 1 luarocks remove --force

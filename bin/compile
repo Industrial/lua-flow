@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+moonc -t lib src
+
+# ugly
+mv lib/src/* lib
+rm -rf lib/src
+
+# uglier, doesnt work
+#find src -name '*.moon' | xargs moonc -t lib

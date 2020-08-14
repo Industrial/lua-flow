@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cat .luarocks \
+  | xargs -n 1 luarocks install

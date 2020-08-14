@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+#busted -p .test.moon src
+busted -p .test.lua lib
