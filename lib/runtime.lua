@@ -6,15 +6,16 @@ local serpent = require("serpent")
 local http_websocket = require("http.websocket")
 local http_server = require("http.server")
 local http_headers = require("http.headers")
-local base64 = require('base64')
-local get_websocket_accept
-get_websocket_accept = function(key)
-  return base64.encode(tostring(key) .. "KEYBOARDCAT")
-end
 local log_request
 log_request = function(server, stream, request_headers)
   local request_method = request_headers:get(":method")
-  return print(string.format('[%s] "%s %s HTTP/%g"  "%s" "%s"\n', os.date("%d/%b/%Y:%H:%M:%S %z"), request_method or "", (request_headers:get(":path")) or "", stream.connection.version, (request_headers:get("referer")) or "-", (request_headers:get("user-agent")) or "-"))
+  local date = os.date("%d/%b/%Y:%H:%M:%S %z")
+  local method = request_method
+  local path = (request_headers:get(":path")) or ""
+  local version = stream.connection.version
+  local referer = (request_headers:get("referer")) or "-"
+  local user_agent = (request_headers:get("user-agent")) or "-"
+  return print("[" .. tostring(date) .. "] \"" .. tostring(method) .. " " .. tostring(path) .. " HTTP/" .. tostring(version) .. "\" \"" .. tostring(referer) .. "\" \"" .. tostring(user_agent) .. "\"\n")
 end
 local respond_with
 respond_with = function(stream, status, headers, body)
@@ -38,7 +39,7 @@ end
 local handle_upgrade_request
 handle_upgrade_request = function(stream, request_headers)
   print("handle_upgrade_request")
-  local sec_websocket_key = request_headers:get('Sec-WebSocket-Key')
+  local sec_websocket_key = request_headers:get("Sec-WebSocket-Key")
   local response_headers = http_headers.new()
   response_headers:append(":status", status)
   response_headers:append("connection", "Upgrade")

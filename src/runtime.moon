@@ -8,21 +8,18 @@ serpent = require "serpent"
 http_websocket = require "http.websocket"
 http_server = require "http.server"
 http_headers = require "http.headers"
-base64 = require 'base64'
-
-get_websocket_accept = (key) ->
-  base64.encode "#{key}KEYBOARDCAT"
 
 log_request = (server, stream, request_headers) ->
   request_method = request_headers\get ":method"
 
-  print string.format '[%s] "%s %s HTTP/%g"  "%s" "%s"\n',
-    os.date "%d/%b/%Y:%H:%M:%S %z",
-    request_method or "",
-    (request_headers\get ":path") or "",
-    stream.connection.version,
-    (request_headers\get "referer") or "-",
-    (request_headers\get "user-agent") or "-"
+  date = os.date "%d/%b/%Y:%H:%M:%S %z"
+  method = request_method
+  path = (request_headers\get ":path") or ""
+  version = stream.connection.version
+  referer = (request_headers\get "referer") or "-"
+  user_agent = (request_headers\get "user-agent") or "-"
+
+  print "[#{date}] \"#{method} #{path} HTTP/#{version}\" \"#{referer}\" \"#{user_agent}\"\n"
 
 respond_with = (stream, status, headers, body) ->
   response_headers = http_headers.new!
@@ -55,13 +52,12 @@ handle_request = (stream, request_headers) ->
 handle_upgrade_request = (stream, request_headers) ->
   print "handle_upgrade_request"
 
-  sec_websocket_key = request_headers\get 'Sec-WebSocket-Key'
+  sec_websocket_key = request_headers\get "Sec-WebSocket-Key"
 
   response_headers = http_headers.new!
   response_headers\append ":status", status
   response_headers\append "connection", "Upgrade"
   response_headers\append "upgrade", "websocket"
-  -- response_headers\append "Sec-WebSocket-Accept", get_websocket_accept sec_websocket_key
   response_headers\append "Sec-WebSocket-Protocol", "noflo"
   response_headers\append "Sec-WebSocket-Version", "13"
 
@@ -85,14 +81,6 @@ handle_stream = (server, stream) ->
   request_headers = stream\get_headers!
   request_method = request_headers\get ":method"
   request_connection = request_headers\get "connection"
-
-  -- print "handle_stream:request_headers", request_headers
-  --
-  -- for k, v in pairs request_headers
-  --   print k, serpent.block v
-  --
-  -- print "handle_stream:request_method", request_method
-  -- print "handle_stream:request_connection", request_connection
 
   log_request server, stream, request_headers
 
