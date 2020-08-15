@@ -1,5 +1,5 @@
-Node = require "src/fbp/Node"
-Port = require "src/fbp/Port"
+Node = require "./Node"
+Port = require "./Port"
 
 describe "Node", ->
   describe "#constructor", ->

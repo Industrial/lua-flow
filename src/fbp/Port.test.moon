@@ -1,4 +1,4 @@
-Port = require "src/fbp/Port"
+Port = require "./Port"
 
 describe "Port", ->
   describe "#constructor", ->
