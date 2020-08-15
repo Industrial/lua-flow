@@ -2,10 +2,11 @@ local host = "0.0.0.0"
 local port = arg[1] or 3001
 print("Host: " .. tostring(host))
 print("Port: " .. tostring(port))
-local serpent = require("serpent")
-local http_websocket = require("http.websocket")
-local http_server = require("http.server")
 local http_headers = require("http.headers")
+local http_server = require("http.server")
+local http_websocket = require("http.websocket")
+local json = require("dkjson")
+local serpent = require("serpent")
 local log_request
 log_request = function(server, stream, request_headers)
   local request_method = request_headers:get(":method")
@@ -33,12 +34,37 @@ respond_with = function(stream, status, headers, body)
 end
 local handle_request
 handle_request = function(stream, request_headers)
-  print("handle_request")
   return respond_with(stream, "101", { }, "")
+end
+local handle_runtime_command
+handle_runtime_command = function(command, payload)
+  return print("handle_runtime_command " .. tostring(command))
+end
+local handle_network_command
+handle_network_command = function(command, payload)
+  return print("handle_network_command " .. tostring(command))
+end
+local handle_graph_command
+handle_graph_command = function(command, payload)
+  return print("handle_graph_command " .. tostring(command))
+end
+local handle_command
+handle_command = function(protocol, command, payload)
+  local result = nil
+  local _exp_0 = protocol
+  if 'runtime' == _exp_0 then
+    result = handle_runtime_command(command, payload)
+  elseif 'network' == _exp_0 then
+    result = handle_network_command(command, payload)
+  elseif 'graph' == _exp_0 then
+    result = handle_graph_command(command, payload)
+  else
+    print("Unsupported Protocol: " .. tostring(protocol))
+  end
+  return result
 end
 local handle_upgrade_request
 handle_upgrade_request = function(stream, request_headers)
-  print("handle_upgrade_request")
   local sec_websocket_key = request_headers:get("Sec-WebSocket-Key")
   local response_headers = http_headers.new()
   response_headers:append(":status", status)
@@ -52,16 +78,23 @@ handle_upgrade_request = function(stream, request_headers)
   })
   while true do
     local txt, opcode = ws:receive()
+    local obj, pos, err = json.decode(txt, 1, nil)
+    if err then
+      print("Error: " .. tostring(err))
+    else
+      local command, payload, protocol
+      command, payload, protocol = obj.command, obj.payload, obj.protocol
+      local result = handle_command(protocol, command, payload)
+      ws:send(result, opcode)
+    end
     if txt == nil then
       break
     end
-    ws:send(txt, opcode)
   end
   return ws:close()
 end
 local handle_stream
 handle_stream = function(server, stream)
-  print("handle_stream")
   local request_headers = stream:get_headers()
   local request_method = request_headers:get(":method")
   local request_connection = request_headers:get("connection")
@@ -74,7 +107,6 @@ handle_stream = function(server, stream)
 end
 local handle_error
 handle_error = function(server, context, op, err, errno)
-  print("handle_error")
   local msg = tostring(op) .. " on " .. tostring(tostring(context)) .. " failed"
   if err then
     msg = tostring(msg) .. ": " .. tostring(tostring(err))

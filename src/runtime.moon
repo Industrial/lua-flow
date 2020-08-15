@@ -4,10 +4,11 @@ port = arg[1] or 3001 -- or 0
 print "Host: #{host}"
 print "Port: #{port}"
 
-serpent = require "serpent"
-http_websocket = require "http.websocket"
-http_server = require "http.server"
 http_headers = require "http.headers"
+http_server = require "http.server"
+http_websocket = require "http.websocket"
+json = require "dkjson"
+serpent = require "serpent"
 
 log_request = (server, stream, request_headers) ->
   request_method = request_headers\get ":method"
@@ -45,13 +46,32 @@ respond_with = (stream, status, headers, body) ->
   stream\shutdown!
 
 handle_request = (stream, request_headers) ->
-  print "handle_request"
-
   respond_with stream, "101", {}, ""
 
-handle_upgrade_request = (stream, request_headers) ->
-  print "handle_upgrade_request"
+handle_runtime_command = (command, payload) ->
+  print "handle_runtime_command #{command}"
 
+handle_network_command = (command, payload) ->
+  print "handle_network_command #{command}"
+
+handle_graph_command = (command, payload) ->
+  print "handle_graph_command #{command}"
+
+handle_command = (protocol, command, payload) ->
+  result = nil
+  switch protocol
+    when 'runtime'
+      result = handle_runtime_command command, payload
+    when 'network'
+      result = handle_network_command command, payload
+    when 'graph'
+      result = handle_graph_command command, payload
+    else
+      print "Unsupported Protocol: #{protocol}"
+
+  result
+
+handle_upgrade_request = (stream, request_headers) ->
   sec_websocket_key = request_headers\get "Sec-WebSocket-Key"
 
   response_headers = http_headers.new!
@@ -68,16 +88,23 @@ handle_upgrade_request = (stream, request_headers) ->
   while true
     txt, opcode = ws\receive!
 
+    obj, pos, err = json.decode txt, 1, nil
+
+    if err
+      print "Error: #{err}"
+    else
+      import command, payload, protocol from obj
+
+      result = handle_command protocol, command, payload
+
+      ws\send result, opcode
+
     if txt == nil
       break
-
-    ws\send txt, opcode
 
   ws\close!
 
 handle_stream = (server, stream) ->
-  print "handle_stream"
-
   request_headers = stream\get_headers!
   request_method = request_headers\get ":method"
   request_connection = request_headers\get "connection"
@@ -90,8 +117,6 @@ handle_stream = (server, stream) ->
     handle_request stream, request_headers
 
 handle_error = (server, context, op, err, errno) ->
-  print "handle_error"
-
   msg = "#{op} on #{tostring context} failed"
   msg = "#{msg}: #{tostring err}" if err
   print "#{msg}\n"
