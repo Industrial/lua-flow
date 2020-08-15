@@ -61,7 +61,7 @@ handle_upgrade_request = (stream, request_headers) ->
   response_headers\append ":status", status
   response_headers\append "connection", "Upgrade"
   response_headers\append "upgrade", "websocket"
-  response_headers\append "Sec-WebSocket-Accept", get_websocket_accept sec_websocket_key
+  -- response_headers\append "Sec-WebSocket-Accept", get_websocket_accept sec_websocket_key
   response_headers\append "Sec-WebSocket-Protocol", "noflo"
   response_headers\append "Sec-WebSocket-Version", "13"
 
@@ -69,17 +69,15 @@ handle_upgrade_request = (stream, request_headers) ->
   ws\accept
     headers: response_headers
 
-  -- while true
-  --   txt, opcode = ws\receive!
-  --
-  --   if txt == nil
-  --     break
-  --
-  --   ws\send txt, opcode
-  --
-  -- ws\close!
+  while true
+    txt, opcode = ws\receive!
 
-  -- respond_with stream, "101", upgrade_response_headers, ""
+    if txt == nil
+      break
+
+    ws\send txt, opcode
+
+  ws\close!
 
 handle_stream = (server, stream) ->
   print "handle_stream"

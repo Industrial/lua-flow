@@ -43,13 +43,20 @@ handle_upgrade_request = function(stream, request_headers)
   response_headers:append(":status", status)
   response_headers:append("connection", "Upgrade")
   response_headers:append("upgrade", "websocket")
-  response_headers:append("Sec-WebSocket-Accept", get_websocket_accept(sec_websocket_key))
   response_headers:append("Sec-WebSocket-Protocol", "noflo")
   response_headers:append("Sec-WebSocket-Version", "13")
   local ws = http_websocket.new_from_stream(stream, request_headers)
-  return ws:accept({
+  ws:accept({
     headers = response_headers
   })
+  while true do
+    local txt, opcode = ws:receive()
+    if txt == nil then
+      break
+    end
+    ws:send(txt, opcode)
+  end
+  return ws:close()
 end
 local handle_stream
 handle_stream = function(server, stream)
