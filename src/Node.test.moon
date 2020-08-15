@@ -1,5 +1,5 @@
-Node = require "./Node"
-Port = require "./Port"
+Node = require "Node"
+Port = require "Port"
 
 describe "Node", ->
   describe "#constructor", ->

@@ -1,4 +1,4 @@
-local Port = require("./Port")
+local Port = require("Port")
 return describe("Port", function()
   return describe("#constructor", function()
     return it("should set a name", function()

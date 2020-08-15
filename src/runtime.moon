@@ -4,6 +4,7 @@ port = arg[1] or 3001 -- or 0
 print "Host: #{host}"
 print "Port: #{port}"
 
+serpent = require "serpent"
 http_websocket = require "http.websocket"
 http_server = require "http.server"
 http_headers = require "http.headers"
@@ -27,14 +28,16 @@ respond_with = (stream, status, headers, body) ->
   response_headers = http_headers.new!
 
   response_headers\append ":status", status
-  response_headers\append "Content-Type", "text/plain"
-  response_headers\append "Transfer-Encoding", "chunked"
-  response_headers\append "Sec-WebSocket-Protocol", "noflo"
-  response_headers\append k, v for k, v in pairs headers
+  -- response_headers\append "Content-Type", "text/plain"
+  -- response_headers\append "Transfer-Encoding", "chunked"
+  -- response_headers\append "Sec-WebSocket-Protocol", "noflo"
 
-  print "response_headers"
-  for k, v in pairs response_headers
-    print k, v
+  for k, v in pairs headers
+    response_headers\append k, v
+
+  -- print "response_headers"
+  -- for k, v in pairs response_headers
+  --   print k, v
 
   stream\write_headers response_headers, false
 
@@ -54,16 +57,29 @@ handle_upgrade_request = (stream, request_headers) ->
 
   sec_websocket_key = request_headers\get 'Sec-WebSocket-Key'
 
+  response_headers = http_headers.new!
+  response_headers\append ":status", status
+  response_headers\append "connection", "Upgrade"
+  response_headers\append "upgrade", "websocket"
+  response_headers\append "Sec-WebSocket-Accept", get_websocket_accept sec_websocket_key
+  response_headers\append "Sec-WebSocket-Protocol", "noflo"
+  response_headers\append "Sec-WebSocket-Version", "13"
+
   ws = http_websocket.new_from_stream stream, request_headers
+  ws\accept
+    headers: response_headers
 
-  ws\accept!
+  -- while true
+  --   txt, opcode = ws\receive!
+  --
+  --   if txt == nil
+  --     break
+  --
+  --   ws\send txt, opcode
+  --
+  -- ws\close!
 
-  response_headers =
-    'Sec-WebSocket-Accept': get_websocket_accept sec_websocket_key
-    'Sec-WebSocket-Protocol': 'noflo'
-    'Sec-WebSocket-Version': ''
-
-  respond_with stream, "101", response_headers, ""
+  -- respond_with stream, "101", upgrade_response_headers, ""
 
 handle_stream = (server, stream) ->
   print "handle_stream"
@@ -72,12 +88,13 @@ handle_stream = (server, stream) ->
   request_method = request_headers\get ":method"
   request_connection = request_headers\get "connection"
 
-  print "handle_stream:request_headers", request_headers
-  for k, v in pairs request_headers
-    print "handle_stream:request_headers:#{k},#{v}"
-
-  print "handle_stream:request_method", request_method
-  print "handle_stream:request_connection", request_connection
+  -- print "handle_stream:request_headers", request_headers
+  --
+  -- for k, v in pairs request_headers
+  --   print k, serpent.block v
+  --
+  -- print "handle_stream:request_method", request_method
+  -- print "handle_stream:request_connection", request_connection
 
   log_request server, stream, request_headers
 

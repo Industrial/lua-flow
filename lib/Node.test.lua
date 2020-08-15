@@ -1,5 +1,5 @@
-local Node = require("./Node")
-local Port = require("./Port")
+local Node = require("Node")
+local Port = require("Port")
 return describe("Node", function()
   describe("#constructor", function()
     it("should set a name", function()

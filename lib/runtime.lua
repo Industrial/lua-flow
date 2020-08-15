@@ -2,6 +2,7 @@ local host = "0.0.0.0"
 local port = arg[1] or 3001
 print("Host: " .. tostring(host))
 print("Port: " .. tostring(port))
+local serpent = require("serpent")
 local http_websocket = require("http.websocket")
 local http_server = require("http.server")
 local http_headers = require("http.headers")
@@ -19,15 +20,8 @@ local respond_with
 respond_with = function(stream, status, headers, body)
   local response_headers = http_headers.new()
   response_headers:append(":status", status)
-  response_headers:append("Content-Type", "text/plain")
-  response_headers:append("Transfer-Encoding", "chunked")
-  response_headers:append("Sec-WebSocket-Protocol", "noflo")
   for k, v in pairs(headers) do
     response_headers:append(k, v)
-  end
-  print("response_headers")
-  for k, v in pairs(response_headers) do
-    print(k, v)
   end
   stream:write_headers(response_headers, false)
   local result, err, errno = stream:write_body_from_string(body)
@@ -45,14 +39,17 @@ local handle_upgrade_request
 handle_upgrade_request = function(stream, request_headers)
   print("handle_upgrade_request")
   local sec_websocket_key = request_headers:get('Sec-WebSocket-Key')
+  local response_headers = http_headers.new()
+  response_headers:append(":status", status)
+  response_headers:append("connection", "Upgrade")
+  response_headers:append("upgrade", "websocket")
+  response_headers:append("Sec-WebSocket-Accept", get_websocket_accept(sec_websocket_key))
+  response_headers:append("Sec-WebSocket-Protocol", "noflo")
+  response_headers:append("Sec-WebSocket-Version", "13")
   local ws = http_websocket.new_from_stream(stream, request_headers)
-  ws:accept()
-  local response_headers = {
-    ['Sec-WebSocket-Accept'] = get_websocket_accept(sec_websocket_key),
-    ['Sec-WebSocket-Protocol'] = 'noflo',
-    ['Sec-WebSocket-Version'] = ''
-  }
-  return respond_with(stream, "101", response_headers, "")
+  return ws:accept({
+    headers = response_headers
+  })
 end
 local handle_stream
 handle_stream = function(server, stream)
@@ -60,12 +57,6 @@ handle_stream = function(server, stream)
   local request_headers = stream:get_headers()
   local request_method = request_headers:get(":method")
   local request_connection = request_headers:get("connection")
-  print("handle_stream:request_headers", request_headers)
-  for k, v in pairs(request_headers) do
-    print("handle_stream:request_headers:" .. tostring(k) .. "," .. tostring(v))
-  end
-  print("handle_stream:request_method", request_method)
-  print("handle_stream:request_connection", request_connection)
   log_request(server, stream, request_headers)
   if request_connection == "Upgrade" then
     return handle_upgrade_request(stream, request_headers)

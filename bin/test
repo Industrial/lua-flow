@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
 #busted -p .test.moon src
-busted -p .test.lua lib
+#busted -p .test.lua lib
+
+busted \
+  -m './lib/?.lua;./src/?.lua;./src/?/?.lua;./src/?/init.lua' \
+  -p .test.lua lib

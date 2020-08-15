@@ -1,4 +1,4 @@
-Port = require "./Port"
+Port = require "Port"
 
 describe "Port", ->
   describe "#constructor", ->
