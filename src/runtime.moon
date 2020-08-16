@@ -22,6 +22,12 @@ log_request = (server, stream, request_headers) ->
 
   print "[#{date}] \"#{method} #{path} HTTP/#{version}\" \"#{referer}\" \"#{user_agent}\"\n"
 
+log_command_in = (protocol, command, payload) ->
+  print "--> #{protocol}:#{command} #{serpent.line payload}"
+
+log_command_out = (protocol, command, payload) ->
+  print "<-- #{protocol}:#{command} #{serpent.line payload}"
+
 respond_with = (stream, status, headers, body) ->
   response_headers = http_headers.new!
 
@@ -95,7 +101,11 @@ handle_upgrade_request = (stream, request_headers) ->
     else
       import command, payload, protocol from obj
 
-      result = handle_command protocol, command, payload
+      log_command_in protocol, command, payload
+
+      result = assert handle_command protocol, command, payload
+
+      log_command_out protocol, command, payload
 
       ws\send result, opcode
 

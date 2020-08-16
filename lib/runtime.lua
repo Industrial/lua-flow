@@ -18,6 +18,14 @@ log_request = function(server, stream, request_headers)
   local user_agent = (request_headers:get("user-agent")) or "-"
   return print("[" .. tostring(date) .. "] \"" .. tostring(method) .. " " .. tostring(path) .. " HTTP/" .. tostring(version) .. "\" \"" .. tostring(referer) .. "\" \"" .. tostring(user_agent) .. "\"\n")
 end
+local log_command_in
+log_command_in = function(protocol, command, payload)
+  return print("--> " .. tostring(protocol) .. ":" .. tostring(command) .. " " .. tostring(serpent.line(payload)))
+end
+local log_command_out
+log_command_out = function(protocol, command, payload)
+  return print("<-- " .. tostring(protocol) .. ":" .. tostring(command) .. " " .. tostring(serpent.line(payload)))
+end
 local respond_with
 respond_with = function(stream, status, headers, body)
   local response_headers = http_headers.new()
@@ -84,7 +92,9 @@ handle_upgrade_request = function(stream, request_headers)
     else
       local command, payload, protocol
       command, payload, protocol = obj.command, obj.payload, obj.protocol
-      local result = handle_command(protocol, command, payload)
+      log_command_in(protocol, command, payload)
+      local result = assert(handle_command(protocol, command, payload))
+      log_command_out(protocol, command, payload)
       ws:send(result, opcode)
     end
     if txt == nil then
