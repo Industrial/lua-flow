@@ -4,44 +4,13 @@ http_websocket = require "http.websocket"
 json = require "dkjson"
 serpent = require "serpent"
 
+RuntimeMessages = require "RuntimeMessages"
+Network = require "Network"
+
 RUNTIME_ID = "keyboardcat"
 RUNTIME_LABEL = "LuaFlow"
 RUNTIME_VERSION = "0.1"
 RUNTIME_TYPE = "noflo"
-
-errors =
-  protocol_handler: (protocol) -> "Unsupported Protocol: #{protocol}"
-  command_handler: (command) -> "Unsupported Command: #{command}"
-  command: (command) -> "Error with command: #{command}"
-
-handlers =
-  runtime:
-    getruntime: (payload) ->
-      return {
-        protocol: "runtime"
-        command: "runtime"
-        payload:
-          id: RUNTIME_ID
-          label: RUNTIME_LABEL
-          version: RUNTIME_VERSION
-          type: RUNTIME_TYPE
-          capabilities: {
-            -- "component:getsource",
-            -- "component:setsource",
-            "graph:readonly",
-            "network:control",
-            "network:data",
-            "network:persist",
-            "network:status",
-            "protocol:component",
-            "protocol:graph",
-            "protocol:network",
-            "protocol:runtime",
-            -- "protocol:trace",
-          }
-      }
-  network: {}
-  graph: {}
 
 class Runtime
   new: (options) =>
@@ -54,6 +23,8 @@ class Runtime
       onstream: (server, stream) ->
         @handle_stream stream
       onerror: @handle_stream_error
+
+    @network = Network!
 
   log_request: (stream, request_headers) =>
     request_method = request_headers\get ":method"
@@ -75,10 +46,10 @@ class Runtime
     print "<-- #{protocol}:#{command} #{serpent.line payload}"
 
   handle_command: (protocol, command, payload) =>
-    protocol_handler = assert handlers[protocol], errors.protocol_handler protocol
-    command_handler = assert protocol_handler[command], errors.command_handler command
-    result = assert command_handler payload, errors.command command
-    result
+    command = "handle_#{protocol}_#{command}"
+    error_message = "Unsupported Protocol Command: #{protocol}:#{command}"
+    handler = assert self[command], error_message
+    handler self, payload
 
   handle_stream: (stream) =>
     request_headers = stream\get_headers!
@@ -130,3 +101,35 @@ class Runtime
     print "Runtime: Listening on http://#{@host}:#{@port}"
 
     @server\loop!
+
+  handle_runtime_getruntime: (payload) =>
+    RuntimeMessages.runtime.output.Runtime
+      id: RUNTIME_ID
+      label: RUNTIME_LABEL
+      version: RUNTIME_VERSION
+      type: RUNTIME_TYPE
+      capabilities: {
+        -- "component:getsource",
+        -- "component:setsource",
+        "graph:readonly",
+        "network:control",
+        "network:data",
+        "network:persist",
+        "network:status",
+        "protocol:component",
+        "protocol:graph",
+        "protocol:network",
+        "protocol:runtime",
+        -- "protocol:trace",
+      }
+
+  handle_graph_clear: (payload) =>
+    RuntimeMessages.graph.output.Clear @network\ensure_graph(id: graph)\clear payload
+
+  handle_graph_addedge: (payload) =>
+    import graph, metadata, src, tgt from payload
+
+    RuntimeMessages.graph.output.AddEdge @network\ensure_graph(id: graph)\addedge
+      src: src
+      tgt: tgt
+      metadata: metadata

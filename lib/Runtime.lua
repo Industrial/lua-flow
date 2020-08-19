@@ -3,50 +3,12 @@ local http_server = require("http.server")
 local http_websocket = require("http.websocket")
 local json = require("dkjson")
 local serpent = require("serpent")
+local RuntimeMessages = require("RuntimeMessages")
+local Network = require("Network")
 local RUNTIME_ID = "keyboardcat"
 local RUNTIME_LABEL = "LuaFlow"
 local RUNTIME_VERSION = "0.1"
 local RUNTIME_TYPE = "noflo"
-local errors = {
-  protocol_handler = function(protocol)
-    return "Unsupported Protocol: " .. tostring(protocol)
-  end,
-  command_handler = function(command)
-    return "Unsupported Command: " .. tostring(command)
-  end,
-  command = function(command)
-    return "Error with command: " .. tostring(command)
-  end
-}
-local handlers = {
-  runtime = {
-    getruntime = function(payload)
-      return {
-        protocol = "runtime",
-        command = "runtime",
-        payload = {
-          id = RUNTIME_ID,
-          label = RUNTIME_LABEL,
-          version = RUNTIME_VERSION,
-          type = RUNTIME_TYPE,
-          capabilities = {
-            "graph:readonly",
-            "network:control",
-            "network:data",
-            "network:persist",
-            "network:status",
-            "protocol:component",
-            "protocol:graph",
-            "protocol:network",
-            "protocol:runtime"
-          }
-        }
-      }
-    end
-  },
-  network = { },
-  graph = { }
-}
 local Runtime
 do
   local _class_0
@@ -70,10 +32,10 @@ do
       return print("<-- " .. tostring(protocol) .. ":" .. tostring(command) .. " " .. tostring(serpent.line(payload)))
     end,
     handle_command = function(self, protocol, command, payload)
-      local protocol_handler = assert(handlers[protocol], errors.protocol_handler(protocol))
-      local command_handler = assert(protocol_handler[command], errors.command_handler(command))
-      local result = assert(command_handler(payload, errors.command(command)))
-      return result
+      command = "handle_" .. tostring(protocol) .. "_" .. tostring(command)
+      local error_message = "Unsupported Protocol Command: " .. tostring(protocol) .. ":" .. tostring(command)
+      local handler = assert(self[command], error_message)
+      return handler(self, payload)
     end,
     handle_stream = function(self, stream)
       local request_headers = stream:get_headers()
@@ -118,6 +80,41 @@ do
       self.server:listen()
       print("Runtime: Listening on http://" .. tostring(self.host) .. ":" .. tostring(self.port))
       return self.server:loop()
+    end,
+    handle_runtime_getruntime = function(self, payload)
+      return RuntimeMessages.runtime.output.Runtime({
+        id = RUNTIME_ID,
+        label = RUNTIME_LABEL,
+        version = RUNTIME_VERSION,
+        type = RUNTIME_TYPE,
+        capabilities = {
+          "graph:readonly",
+          "network:control",
+          "network:data",
+          "network:persist",
+          "network:status",
+          "protocol:component",
+          "protocol:graph",
+          "protocol:network",
+          "protocol:runtime"
+        }
+      })
+    end,
+    handle_graph_clear = function(self, payload)
+      return RuntimeMessages.graph.output.Clear(self.network:ensure_graph({
+        id = graph
+      }):clear(payload))
+    end,
+    handle_graph_addedge = function(self, payload)
+      local graph, metadata, src, tgt
+      graph, metadata, src, tgt = payload.graph, payload.metadata, payload.src, payload.tgt
+      return RuntimeMessages.graph.output.AddEdge(self.network:ensure_graph({
+        id = graph
+      }):addedge({
+        src = src,
+        tgt = tgt,
+        metadata = metadata
+      }))
     end
   }
   _base_0.__index = _base_0
@@ -133,6 +130,7 @@ do
         end,
         onerror = self.handle_stream_error
       })
+      self.network = Network()
     end,
     __base = _base_0,
     __name = "Runtime"
