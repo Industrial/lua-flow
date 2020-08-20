@@ -14,6 +14,8 @@ RUNTIME_TYPE = "noflo"
 
 class Runtime
   new: (options) =>
+    print "Runtime#new"
+
     @host = options.host or "0.0.0.0"
     @port = options.port or 3001
 
@@ -27,6 +29,8 @@ class Runtime
     @network = Network!
 
   log_request: (stream, request_headers) =>
+    print "Runtime#log_request"
+
     request_method = request_headers\get ":method"
 
     date = os.date "%d/%b/%Y:%H:%M:%S %z"
@@ -46,12 +50,16 @@ class Runtime
     print "<-- #{protocol}:#{command} #{serpent.line payload}"
 
   handle_command: (protocol, command, payload) =>
+    print "Runtime#handle_command"
+
     command = "handle_#{protocol}_#{command}"
     error_message = "Unsupported Protocol Command: #{protocol}:#{command}"
     handler = assert self[command], error_message
     handler self, payload
 
   handle_stream: (stream) =>
+    print "Runtime#handle_stream"
+
     request_headers = stream\get_headers!
 
     response_headers = http_headers.new!
@@ -79,6 +87,8 @@ class Runtime
 
         result = assert @handle_command protocol, command, payload
 
+        -- print "Runtime#handle_stream:result", serpent.block result
+
         @log_command_out result
 
         ws\send (json.encode result), "text"
@@ -89,11 +99,15 @@ class Runtime
     ws\close!
 
   handle_stream_error: (server, context, op, err, errno) =>
+    print "Runtime#handle_stream_error"
+
     msg = "#{op} on #{tostring context} failed"
     msg = "#{msg}: #{tostring err}" if err
     print "#{msg}\n"
 
   start: () =>
+    print "Runtime#start"
+
     print "Runtime: Starting..."
 
     @server\listen!
@@ -103,6 +117,8 @@ class Runtime
     @server\loop!
 
   handle_runtime_getruntime: (payload) =>
+    print "Runtime#handle_runtime_getruntime"
+
     RuntimeMessages.runtime.output.Runtime
       id: RUNTIME_ID
       label: RUNTIME_LABEL
@@ -124,12 +140,43 @@ class Runtime
       }
 
   handle_graph_clear: (payload) =>
-    RuntimeMessages.graph.output.Clear @network\ensure_graph(id: graph)\clear payload
+    print "Runtime#handle_graph_clear"
+
+    import id from payload
+
+    graph = @network\ensure_graph
+      id: id
+
+    result = graph\clear payload
+
+    RuntimeMessages.graph.output.Clear result
 
   handle_graph_addedge: (payload) =>
+    print "Runtime#handle_graph_addedge"
+
     import graph, metadata, src, tgt from payload
 
-    RuntimeMessages.graph.output.AddEdge @network\ensure_graph(id: graph)\addedge
+    graph = @network\ensure_graph
+      id: graph
+
+    result = graph\addedge
       src: src
       tgt: tgt
       metadata: metadata
+
+    RuntimeMessages.graph.output.AddEdge result
+
+  handle_graph_changenode: (payload) =>
+    print "Runtime#handle_graph_changenode"
+    print "Runtime#handle_graph_changenode:payload", serpent.block payload
+
+    import graph, id, metadata from payload
+
+    graph = @network\ensure_graph
+      id: graph
+
+    result = graph\changenode
+      id: id
+      metadata: metadata
+
+    RuntimeMessages.graph.output.ChangeNode result

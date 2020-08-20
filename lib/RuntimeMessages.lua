@@ -53,7 +53,15 @@ do
     graph = {
       output = {
         AddEdge = function(options)
-          return { }
+          return {
+            protocol = "graph",
+            command = "addedge",
+            payload = {
+              src = options.src,
+              tgt = options.tgt,
+              metadata = options.metadata
+            }
+          }
         end,
         AddGroup = function(options)
           return { }

@@ -144,7 +144,14 @@ class RuntimeMessages
 
     output:
       AddEdge: (options) ->
-        {}
+        {
+          protocol: "graph"
+          command: "addedge"
+          payload:
+            src: options.src
+            tgt: options.tgt
+            metadata: options.metadata
+        }
 
       AddGroup: (options) ->
         {}

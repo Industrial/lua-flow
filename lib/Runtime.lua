@@ -14,6 +14,7 @@ do
   local _class_0
   local _base_0 = {
     log_request = function(self, stream, request_headers)
+      print("Runtime#log_request")
       local request_method = request_headers:get(":method")
       local date = os.date("%d/%b/%Y:%H:%M:%S %z")
       local method = request_method
@@ -32,12 +33,14 @@ do
       return print("<-- " .. tostring(protocol) .. ":" .. tostring(command) .. " " .. tostring(serpent.line(payload)))
     end,
     handle_command = function(self, protocol, command, payload)
+      print("Runtime#handle_command")
       command = "handle_" .. tostring(protocol) .. "_" .. tostring(command)
       local error_message = "Unsupported Protocol Command: " .. tostring(protocol) .. ":" .. tostring(command)
       local handler = assert(self[command], error_message)
       return handler(self, payload)
     end,
     handle_stream = function(self, stream)
+      print("Runtime#handle_stream")
       local request_headers = stream:get_headers()
       local response_headers = http_headers.new()
       response_headers:append(":status", status)
@@ -69,6 +72,7 @@ do
       return ws:close()
     end,
     handle_stream_error = function(self, server, context, op, err, errno)
+      print("Runtime#handle_stream_error")
       local msg = tostring(op) .. " on " .. tostring(tostring(context)) .. " failed"
       if err then
         msg = tostring(msg) .. ": " .. tostring(tostring(err))
@@ -76,12 +80,14 @@ do
       return print(tostring(msg) .. "\n")
     end,
     start = function(self)
+      print("Runtime#start")
       print("Runtime: Starting...")
       self.server:listen()
       print("Runtime: Listening on http://" .. tostring(self.host) .. ":" .. tostring(self.port))
       return self.server:loop()
     end,
     handle_runtime_getruntime = function(self, payload)
+      print("Runtime#handle_runtime_getruntime")
       return RuntimeMessages.runtime.output.Runtime({
         id = RUNTIME_ID,
         label = RUNTIME_LABEL,
@@ -101,25 +107,48 @@ do
       })
     end,
     handle_graph_clear = function(self, payload)
-      return RuntimeMessages.graph.output.Clear(self.network:ensure_graph({
-        id = graph
-      }):clear(payload))
+      print("Runtime#handle_graph_clear")
+      local id
+      id = payload.id
+      local graph = self.network:ensure_graph({
+        id = id
+      })
+      local result = graph:clear(payload)
+      return RuntimeMessages.graph.output.Clear(result)
     end,
     handle_graph_addedge = function(self, payload)
+      print("Runtime#handle_graph_addedge")
       local graph, metadata, src, tgt
       graph, metadata, src, tgt = payload.graph, payload.metadata, payload.src, payload.tgt
-      return RuntimeMessages.graph.output.AddEdge(self.network:ensure_graph({
+      graph = self.network:ensure_graph({
         id = graph
-      }):addedge({
+      })
+      local result = graph:addedge({
         src = src,
         tgt = tgt,
         metadata = metadata
-      }))
+      })
+      return RuntimeMessages.graph.output.AddEdge(result)
+    end,
+    handle_graph_changenode = function(self, payload)
+      print("Runtime#handle_graph_changenode")
+      print("Runtime#handle_graph_changenode:payload", serpent.block(payload))
+      local graph, id, metadata
+      graph, id, metadata = payload.graph, payload.id, payload.metadata
+      graph = self.network:ensure_graph({
+        id = graph
+      })
+      local result = graph:changenode({
+        id = id,
+        metadata = metadata
+      })
+      return RuntimeMessages.graph.output.ChangeNode(result)
     end
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
     __init = function(self, options)
+      print("Runtime#new")
       self.host = options.host or "0.0.0.0"
       self.port = options.port or 3001
       self.server = http_server.listen({
