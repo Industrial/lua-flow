@@ -28,6 +28,14 @@ class Runtime
 
     @network = Network!
 
+    @log_commands = true
+    if options.log_commands
+      @log_commands = options.log_commands
+
+    @log_command_contents = false
+    if options.log_command_contents
+      @log_command_contents = options.log_command_contents
+
   log_request: (stream, request_headers) =>
     -- print "Runtime#log_request"
 
@@ -43,11 +51,26 @@ class Runtime
     print "[#{date}] \"#{method} #{path} HTTP/#{version}\" \"#{referer}\" \"#{user_agent}\"\n"
 
   log_command_in: (protocol, command, payload) =>
-    print "--> #{protocol}:#{command} #{serpent.line payload}"
+    return unless @log_commands
+
+    output = "--> #{protocol}:#{command}"
+
+    if @log_command_contents
+      output = "#{output} #{serpent.line payload}"
+
+    print output
 
   log_command_out: (result) =>
+    return unless @log_commands
+
     import protocol, command, payload from result
-    print "<-- #{protocol}:#{command} #{serpent.line payload}"
+
+    output = "<-- #{protocol}:#{command}"
+
+    if @log_command_contents
+      output = "#{output} #{serpent.line payload}"
+
+    print output
 
   handle_command: (protocol, command, payload) =>
     -- print "Runtime#handle_command"

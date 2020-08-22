@@ -24,12 +24,26 @@ do
       return print("[" .. tostring(date) .. "] \"" .. tostring(method) .. " " .. tostring(path) .. " HTTP/" .. tostring(version) .. "\" \"" .. tostring(referer) .. "\" \"" .. tostring(user_agent) .. "\"\n")
     end,
     log_command_in = function(self, protocol, command, payload)
-      return print("--> " .. tostring(protocol) .. ":" .. tostring(command) .. " " .. tostring(serpent.line(payload)))
+      if not (self.log_commands) then
+        return 
+      end
+      local output = "--> " .. tostring(protocol) .. ":" .. tostring(command)
+      if self.log_command_contents then
+        output = tostring(output) .. " " .. tostring(serpent.line(payload))
+      end
+      return print(output)
     end,
     log_command_out = function(self, result)
+      if not (self.log_commands) then
+        return 
+      end
       local protocol, command, payload
       protocol, command, payload = result.protocol, result.command, result.payload
-      return print("<-- " .. tostring(protocol) .. ":" .. tostring(command) .. " " .. tostring(serpent.line(payload)))
+      local output = "<-- " .. tostring(protocol) .. ":" .. tostring(command)
+      if self.log_command_contents then
+        output = tostring(output) .. " " .. tostring(serpent.line(payload))
+      end
+      return print(output)
     end,
     handle_command = function(self, protocol, command, payload)
       command = "handle_" .. tostring(protocol) .. "_" .. tostring(command)
@@ -151,6 +165,14 @@ do
         onerror = self.handle_stream_error
       })
       self.network = Network()
+      self.log_commands = true
+      if options.log_commands then
+        self.log_commands = options.log_commands
+      end
+      self.log_command_contents = false
+      if options.log_command_contents then
+        self.log_command_contents = options.log_command_contents
+      end
     end,
     __base = _base_0,
     __name = "Runtime"
