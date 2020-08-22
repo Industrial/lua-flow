@@ -4,17 +4,14 @@ do
   local _class_0
   local _base_0 = {
     add_graph = function(self, options)
-      print("Network#add_graph")
       self.graphs[options.id] = Graph({
         id = options.id
       })
     end,
     remove_graph = function(self, options)
-      print("Network#remove_graph")
       self.graphs[options.id] = nil
     end,
     ensure_graph = function(self, options)
-      print("Network#ensure_graph")
       local id
       id = options.id
       self.graphs[id] = self.graphs[id] or Graph({
@@ -26,7 +23,6 @@ do
   _base_0.__index = _base_0
   _class_0 = setmetatable({
     __init = function(self, options)
-      print("Network#new")
       self.id = "network"
       self.graphs = { }
       return self:add_graph({

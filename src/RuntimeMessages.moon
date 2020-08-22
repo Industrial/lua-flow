@@ -175,7 +175,14 @@ class RuntimeMessages
         {}
 
       ChangeNode: (options) ->
-        {}
+        {
+          protocol: "graph"
+          command: "changenode"
+          payload:
+            graph: options.graph
+            id: options.id
+            metadata: options.metadata
+        }
 
       Clear: (options) ->
         {

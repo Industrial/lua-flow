@@ -6,9 +6,14 @@ do
   _base_0.__index = _base_0
   _class_0 = setmetatable({
     __init = function(self, options)
-      print("Edge#new")
-      self.src = options.src
-      self.tgt = options.tgt
+      self.src = {
+        node = options.src.node,
+        port = options.src.port
+      }
+      self.tgt = {
+        node = options.tgt.node,
+        port = options.tgt.port
+      }
       self.metadata = options.metadata
     end,
     __base = _base_0,

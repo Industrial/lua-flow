@@ -4,7 +4,7 @@ Edge = require "Edge"
 
 class Graph
   new: (options) =>
-    print "Graph#new"
+    -- print "Graph#new"
 
     @id = options.id
     @nodes = {}
@@ -19,12 +19,12 @@ class Graph
     @base_dir = nil
 
   get_edge_name: (src_node, src_port, tgt_node, tgt_port) ->
-    print "Graph#get_edge_name"
+    -- print "Graph#get_edge_name"
 
     "#{src_node}:#{src_port}-#{tgt_node}:#{tgt_port}"
 
   clear: (payload) =>
-    print "Graph#clear"
+    -- print "Graph#clear"
 
     import id, main, baseDir from payload
 
@@ -46,20 +46,25 @@ class Graph
       baseDir: @base_dir
     }
 
-  addnode: () =>
+  addnode: (payload) =>
     print "Graph#addnode"
 
-  removenode: () =>
+  removenode: (payload) =>
     print "Graph#removenode"
 
-  removenodeedges: () =>
+  removenodeedges: (payload) =>
     print "Graph#removenodeedges"
 
-  renamenode: () =>
+  renamenode: (payload) =>
     print "Graph#renamenode"
 
-  changenode: () =>
+  changenode: (payload) =>
     print "Graph#changenode"
+
+    import id, metadata from payload
+
+    print "Graph#changenode:id", id
+    print "Graph#changenode:metadata", metadata
 
   addedge: (payload) =>
     print "Graph#addedge"
@@ -77,65 +82,65 @@ class Graph
 
     @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = nil
 
-  renameedge: () =>
+  renameedge: (payload) =>
     print "Graph#renameedge"
 
-  changeedge: () =>
+  changeedge: (payload) =>
     print "Graph#changeedge"
 
-  addinitial: () =>
+  addinitial: (payload) =>
     print "Graph#addinitial"
 
-  removeinitial: () =>
+  removeinitial: (payload) =>
     print "Graph#removeinitial"
 
-  addinport: () =>
+  addinport: (payload) =>
     print "Graph#addinport"
 
-  removeinport: () =>
+  removeinport: (payload) =>
     print "Graph#removeinport"
 
-  renameinport: () =>
+  renameinport: (payload) =>
     print "Graph#renameinport"
 
-  addoutport: () =>
+  addoutport: (payload) =>
     print "Graph#addoutport"
 
-  removeoutport: () =>
+  removeoutport: (payload) =>
     print "Graph#removeoutport"
 
-  renameoutport: () =>
+  renameoutport: (payload) =>
     print "Graph#renameoutport"
 
-  addgroup: () =>
+  addgroup: (payload) =>
     print "Graph#addgroup"
 
-  removegroup: () =>
+  removegroup: (payload) =>
     print "Graph#removegroup"
 
-  renamegroup: () =>
+  renamegroup: (payload) =>
     print "Graph#renamegroup"
 
-  changegroup: () =>
+  changegroup: (payload) =>
     print "Graph#changegroup"
 
-  getstatus: () =>
+  getstatus: (payload) =>
     print "Graph#getstatus"
 
-  start: () =>
+  start: (payload) =>
     print "Graph#start"
 
-  stop: () =>
+  stop: (payload) =>
     print "Graph#stop"
 
-  persist: () =>
+  persist: (payload) =>
     print "Graph#persist"
 
-  debug: () =>
+  debug: (payload) =>
     print "Graph#debug"
 
-  getedges: () =>
+  getedges: (payload) =>
     print "Graph#getedges"
 
-  list: () =>
+  list: (payload) =>
     print "Graph#list"

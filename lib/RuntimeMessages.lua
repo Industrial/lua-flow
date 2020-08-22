@@ -85,7 +85,15 @@ do
           return { }
         end,
         ChangeNode = function(options)
-          return { }
+          return {
+            protocol = "graph",
+            command = "changenode",
+            payload = {
+              graph = options.graph,
+              id = options.id,
+              metadata = options.metadata
+            }
+          }
         end,
         Clear = function(options)
           return {

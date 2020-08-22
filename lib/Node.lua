@@ -3,22 +3,23 @@ do
   local _class_0
   local _base_0 = {
     add_in_port = function(self, port)
-      self.in_ports[port.name] = port
+      self.in_ports[port.id] = port
     end,
     remove_in_port = function(self, port)
-      self.in_ports[port.name] = nil
+      self.in_ports[port.id] = nil
     end,
     add_out_port = function(self, port)
-      self.out_ports[port.name] = port
+      self.out_ports[port.id] = port
     end,
     remove_out_port = function(self, port)
-      self.out_ports[port.name] = nil
+      self.out_ports[port.id] = nil
     end
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
     __init = function(self, options)
-      self.name = options.name
+      self.id = options.id
+      self.metadata = options.metadata
       self.in_ports = { }
       self.out_ports = { }
     end,

@@ -5,11 +5,9 @@ do
   local _class_0
   local _base_0 = {
     get_edge_name = function(src_node, src_port, tgt_node, tgt_port)
-      print("Graph#get_edge_name")
       return tostring(src_node) .. ":" .. tostring(src_port) .. "-" .. tostring(tgt_node) .. ":" .. tostring(tgt_port)
     end,
     clear = function(self, payload)
-      print("Graph#clear")
       local id, main, baseDir
       id, main, baseDir = payload.id, payload.main, payload.baseDir
       self.id = id
@@ -29,20 +27,24 @@ do
         baseDir = self.base_dir
       }
     end,
-    addnode = function(self)
+    addnode = function(self, payload)
       return print("Graph#addnode")
     end,
-    removenode = function(self)
+    removenode = function(self, payload)
       return print("Graph#removenode")
     end,
-    removenodeedges = function(self)
+    removenodeedges = function(self, payload)
       return print("Graph#removenodeedges")
     end,
-    renamenode = function(self)
+    renamenode = function(self, payload)
       return print("Graph#renamenode")
     end,
-    changenode = function(self)
-      return print("Graph#changenode")
+    changenode = function(self, payload)
+      print("Graph#changenode")
+      local id, metadata
+      id, metadata = payload.id, payload.metadata
+      print("Graph#changenode:id", id)
+      return print("Graph#changenode:metadata", metadata)
     end,
     addedge = function(self, payload)
       print("Graph#addedge")
@@ -57,74 +59,73 @@ do
       src, tgt = payload.src, payload.tgt
       self.edges[self:get_edge_name(src.node, src.port, tgt.node, tgt.port)] = nil
     end,
-    renameedge = function(self)
+    renameedge = function(self, payload)
       return print("Graph#renameedge")
     end,
-    changeedge = function(self)
+    changeedge = function(self, payload)
       return print("Graph#changeedge")
     end,
-    addinitial = function(self)
+    addinitial = function(self, payload)
       return print("Graph#addinitial")
     end,
-    removeinitial = function(self)
+    removeinitial = function(self, payload)
       return print("Graph#removeinitial")
     end,
-    addinport = function(self)
+    addinport = function(self, payload)
       return print("Graph#addinport")
     end,
-    removeinport = function(self)
+    removeinport = function(self, payload)
       return print("Graph#removeinport")
     end,
-    renameinport = function(self)
+    renameinport = function(self, payload)
       return print("Graph#renameinport")
     end,
-    addoutport = function(self)
+    addoutport = function(self, payload)
       return print("Graph#addoutport")
     end,
-    removeoutport = function(self)
+    removeoutport = function(self, payload)
       return print("Graph#removeoutport")
     end,
-    renameoutport = function(self)
+    renameoutport = function(self, payload)
       return print("Graph#renameoutport")
     end,
-    addgroup = function(self)
+    addgroup = function(self, payload)
       return print("Graph#addgroup")
     end,
-    removegroup = function(self)
+    removegroup = function(self, payload)
       return print("Graph#removegroup")
     end,
-    renamegroup = function(self)
+    renamegroup = function(self, payload)
       return print("Graph#renamegroup")
     end,
-    changegroup = function(self)
+    changegroup = function(self, payload)
       return print("Graph#changegroup")
     end,
-    getstatus = function(self)
+    getstatus = function(self, payload)
       return print("Graph#getstatus")
     end,
-    start = function(self)
+    start = function(self, payload)
       return print("Graph#start")
     end,
-    stop = function(self)
+    stop = function(self, payload)
       return print("Graph#stop")
     end,
-    persist = function(self)
+    persist = function(self, payload)
       return print("Graph#persist")
     end,
-    debug = function(self)
+    debug = function(self, payload)
       return print("Graph#debug")
     end,
-    getedges = function(self)
+    getedges = function(self, payload)
       return print("Graph#getedges")
     end,
-    list = function(self)
+    list = function(self, payload)
       return print("Graph#list")
     end
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
     __init = function(self, options)
-      print("Graph#new")
       self.id = options.id
       self.nodes = { }
       self.edges = { }

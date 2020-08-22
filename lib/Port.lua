@@ -5,7 +5,7 @@ do
   _base_0.__index = _base_0
   _class_0 = setmetatable({
     __init = function(self, options)
-      self.name = options.name
+      self.id = options.id
     end,
     __base = _base_0,
     __name = "Port"

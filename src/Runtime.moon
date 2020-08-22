@@ -14,7 +14,7 @@ RUNTIME_TYPE = "noflo"
 
 class Runtime
   new: (options) =>
-    print "Runtime#new"
+    -- print "Runtime#new"
 
     @host = options.host or "0.0.0.0"
     @port = options.port or 3001
@@ -29,7 +29,7 @@ class Runtime
     @network = Network!
 
   log_request: (stream, request_headers) =>
-    print "Runtime#log_request"
+    -- print "Runtime#log_request"
 
     request_method = request_headers\get ":method"
 
@@ -50,7 +50,7 @@ class Runtime
     print "<-- #{protocol}:#{command} #{serpent.line payload}"
 
   handle_command: (protocol, command, payload) =>
-    print "Runtime#handle_command"
+    -- print "Runtime#handle_command"
 
     command = "handle_#{protocol}_#{command}"
     error_message = "Unsupported Protocol Command: #{protocol}:#{command}"
@@ -58,7 +58,7 @@ class Runtime
     handler self, payload
 
   handle_stream: (stream) =>
-    print "Runtime#handle_stream"
+    -- print "Runtime#handle_stream"
 
     request_headers = stream\get_headers!
 
@@ -99,14 +99,14 @@ class Runtime
     ws\close!
 
   handle_stream_error: (server, context, op, err, errno) =>
-    print "Runtime#handle_stream_error"
+    -- print "Runtime#handle_stream_error"
 
     msg = "#{op} on #{tostring context} failed"
     msg = "#{msg}: #{tostring err}" if err
     print "#{msg}\n"
 
   start: () =>
-    print "Runtime#start"
+    -- print "Runtime#start"
 
     print "Runtime: Starting..."
 
@@ -117,7 +117,7 @@ class Runtime
     @server\loop!
 
   handle_runtime_getruntime: (payload) =>
-    print "Runtime#handle_runtime_getruntime"
+    -- print "Runtime#handle_runtime_getruntime"
 
     RuntimeMessages.runtime.output.Runtime
       id: RUNTIME_ID
@@ -140,7 +140,7 @@ class Runtime
       }
 
   handle_graph_clear: (payload) =>
-    print "Runtime#handle_graph_clear"
+    -- print "Runtime#handle_graph_clear"
 
     import id from payload
 
@@ -152,7 +152,7 @@ class Runtime
     RuntimeMessages.graph.output.Clear result
 
   handle_graph_addedge: (payload) =>
-    print "Runtime#handle_graph_addedge"
+    -- print "Runtime#handle_graph_addedge"
 
     import graph, metadata, src, tgt from payload
 
