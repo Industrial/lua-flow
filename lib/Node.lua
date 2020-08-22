@@ -2,6 +2,12 @@ local Node
 do
   local _class_0
   local _base_0 = {
+    set_id = function(self, id)
+      self.id = id
+    end,
+    set_metadata = function(self, metadata)
+      self.metadata = metadata
+    end,
     add_in_port = function(self, port)
       self.in_ports[port.id] = port
     end,

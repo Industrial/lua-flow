@@ -7,6 +7,12 @@ class Node
     @in_ports = {}
     @out_ports = {}
 
+  set_id: (id) =>
+    @id = id
+
+  set_metadata: (metadata) =>
+    @metadata = metadata
+
   add_in_port: (port) =>
     -- print "Node#add_in_port"
 
