@@ -102,12 +102,6 @@ do
         version = RUNTIME_VERSION,
         type = RUNTIME_TYPE,
         capabilities = {
-          "graph:readonly",
-          "network:control",
-          "network:data",
-          "network:persist",
-          "network:status",
-          "protocol:component",
           "protocol:graph",
           "protocol:network",
           "protocol:runtime"
