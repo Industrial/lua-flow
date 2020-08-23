@@ -1,7 +1,7 @@
 Port = require "Port"
 
 describe "Port", ->
-  describe "#constructor", ->
+  describe "#new", ->
     it "should set an id", ->
       port = Port id: "Port"
       expected = "Port"

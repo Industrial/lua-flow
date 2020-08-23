@@ -2,7 +2,7 @@ Node = require "Node"
 Port = require "Port"
 
 describe "Node", ->
-  describe "#constructor", ->
+  describe "#new", ->
     it "should set an id", ->
       node = Node id: "Node"
       expected = "Node"
@@ -21,6 +21,28 @@ describe "Node", ->
       node = Node id: "Node"
       expected = "table"
       actual = type node.out_ports
+
+      assert.are.same actual, expected
+
+  describe "#set_id", ->
+    it "should set an id", ->
+      node = Node id: "Node"
+      node\set_id "Node1"
+      expected = "Node1"
+      actual = node.id
+
+      assert.are.equal actual, expected
+
+  describe "#set_metadata", ->
+    it "should set the metadata", ->
+      node = Node id: "Node"
+      node\set_metadata
+        a: "b"
+        c: "d"
+      expected =
+        a: "b"
+        c: "d"
+      actual = node.metadata
 
       assert.are.same actual, expected
 
