@@ -18,10 +18,48 @@ class Graph
     @start_time = nil
     @base_dir = nil
 
-  get_edge_name: (src_node, src_port, tgt_node, tgt_port) ->
-    -- print "Graph#get_edge_name"
+  addedge: (payload) =>
+    -- print "Graph#addedge"
 
-    "#{src_node}:#{src_port}-#{tgt_node}:#{tgt_port}"
+    import src, tgt, metadata from payload
+
+    @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = Edge payload
+
+    payload
+
+  addgroup: (payload) =>
+    print "Graph#addgroup"
+
+  addinitial: (payload) =>
+    print "Graph#addinitial"
+
+  addinport: (payload) =>
+    print "Graph#addinport"
+
+  addnode: (payload) =>
+    print "Graph#addnode"
+
+  addoutport: (payload) =>
+    print "Graph#addoutport"
+
+  changeedge: (payload) =>
+    print "Graph#changeedge"
+
+  changegroup: (payload) =>
+    print "Graph#changegroup"
+
+  changenode: (payload) =>
+    print "Graph#changenode"
+    print "Graph#changenode:payload", serpent.block payload
+
+    import id, metadata from payload
+
+    print "Graph#changenode:id", id
+    print "Graph#changenode:metadata", metadata
+
+    @nodes[id]\set_metadata metadata
+
+    payload
 
   clear: (payload) =>
     -- print "Graph#clear"
@@ -46,39 +84,25 @@ class Graph
       baseDir: @base_dir
     }
 
-  addnode: (payload) =>
-    print "Graph#addnode"
+  debug: (payload) =>
+    print "Graph#debug"
 
-  removenode: (payload) =>
-    print "Graph#removenode"
+  get_edge_name: (src_node, src_port, tgt_node, tgt_port) =>
+    -- print "Graph#get_edge_name"
 
-  removenodeedges: (payload) =>
-    print "Graph#removenodeedges"
+    "#{src_node}:#{src_port}-#{tgt_node}:#{tgt_port}"
 
-  renamenode: (payload) =>
-    print "Graph#renamenode"
+  getedges: (payload) =>
+    print "Graph#getedges"
 
-  changenode: (payload) =>
-    print "Graph#changenode"
-    print "Graph#changenode:payload", serpent.block payload
+  getstatus: (payload) =>
+    print "Graph#getstatus"
 
-    import id, metadata from payload
+  list: (payload) =>
+    print "Graph#list"
 
-    print "Graph#changenode:id", id
-    print "Graph#changenode:metadata", metadata
-
-    @nodes[id]\set_metadata metadata
-
-    payload
-
-  addedge: (payload) =>
-    -- print "Graph#addedge"
-
-    import src, tgt, metadata from payload
-
-    @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = Edge payload
-
-    payload
+  persist: (payload) =>
+    print "Graph#persist"
 
   removeedge: (payload) =>
     -- print "Graph#removeedge"
@@ -87,65 +111,41 @@ class Graph
 
     @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = nil
 
-  renameedge: (payload) =>
-    print "Graph#renameedge"
-
-  changeedge: (payload) =>
-    print "Graph#changeedge"
-
-  addinitial: (payload) =>
-    print "Graph#addinitial"
+  removegroup: (payload) =>
+    print "Graph#removegroup"
 
   removeinitial: (payload) =>
     print "Graph#removeinitial"
 
-  addinport: (payload) =>
-    print "Graph#addinport"
-
   removeinport: (payload) =>
     print "Graph#removeinport"
 
-  renameinport: (payload) =>
-    print "Graph#renameinport"
+  removenode: (payload) =>
+    print "Graph#removenode"
 
-  addoutport: (payload) =>
-    print "Graph#addoutport"
+  removenodeedges: (payload) =>
+    print "Graph#removenodeedges"
 
   removeoutport: (payload) =>
     print "Graph#removeoutport"
 
-  renameoutport: (payload) =>
-    print "Graph#renameoutport"
-
-  addgroup: (payload) =>
-    print "Graph#addgroup"
-
-  removegroup: (payload) =>
-    print "Graph#removegroup"
+  renameedge: (payload) =>
+    print "Graph#renameedge"
 
   renamegroup: (payload) =>
     print "Graph#renamegroup"
 
-  changegroup: (payload) =>
-    print "Graph#changegroup"
+  renameinport: (payload) =>
+    print "Graph#renameinport"
 
-  getstatus: (payload) =>
-    print "Graph#getstatus"
+  renamenode: (payload) =>
+    print "Graph#renamenode"
+
+  renameoutport: (payload) =>
+    print "Graph#renameoutport"
 
   start: (payload) =>
     print "Graph#start"
 
   stop: (payload) =>
     print "Graph#stop"
-
-  persist: (payload) =>
-    print "Graph#persist"
-
-  debug: (payload) =>
-    print "Graph#debug"
-
-  getedges: (payload) =>
-    print "Graph#getedges"
-
-  list: (payload) =>
-    print "Graph#list"

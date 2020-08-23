@@ -4,7 +4,7 @@ local Graph
 do
   local _class_0
   local _base_0 = {
-    get_edge_name = function(src_node, src_port, tgt_node, tgt_port)
+    get_edge_name = function(self, src_node, src_port, tgt_node, tgt_port)
       return tostring(src_node) .. ":" .. tostring(src_port) .. "-" .. tostring(tgt_node) .. ":" .. tostring(tgt_port)
     end,
     clear = function(self, payload)
