@@ -63,22 +63,19 @@ do
       ws:accept({
         headers = response_headers
       })
-      while true do
-        local txt, opcode = ws:receive()
+      for txt, opcode in ws:each() do
         local obj, pos, err = json.decode(txt, 1, nil)
         if err then
           print("Error: " .. tostring(err))
-        else
-          local command, payload, protocol
-          command, payload, protocol = obj.command, obj.payload, obj.protocol
-          self:log_command_in(protocol, command, payload)
-          local result = assert(self:handle_command(protocol, command, payload))
-          self:log_command_out(result)
-          ws:send((json.encode(result)), "text")
-        end
-        if txt == nil then
+          ws:close()
           break
         end
+        local command, payload, protocol
+        command, payload, protocol = obj.command, obj.payload, obj.protocol
+        self:log_command_in(protocol, command, payload)
+        local result = assert(self:handle_command(protocol, command, payload))
+        self:log_command_out(result)
+        ws:send((json.encode(result)), "text")
       end
       return ws:close()
     end,

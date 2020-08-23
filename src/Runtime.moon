@@ -96,28 +96,21 @@ class Runtime
     ws\accept
       headers: response_headers
 
-    while true
-      txt, opcode = ws\receive!
-
+    for txt, opcode in ws\each!
       obj, pos, err = json.decode txt, 1, nil
 
       if err
         print "Error: #{err}"
-      else
-        import command, payload, protocol from obj
-
-        @log_command_in protocol, command, payload
-
-        result = assert @handle_command protocol, command, payload
-
-        -- print "Runtime#handle_stream:result", serpent.block result
-
-        @log_command_out result
-
-        ws\send (json.encode result), "text"
-
-      if txt == nil
+        ws\close!
         break
+
+      import command, payload, protocol from obj
+
+      @log_command_in protocol, command, payload
+      result = assert @handle_command protocol, command, payload
+      @log_command_out result
+
+      ws\send (json.encode result), "text"
 
     ws\close!
 
