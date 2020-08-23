@@ -41,20 +41,21 @@ do
     end,
     changenode = function(self, payload)
       print("Graph#changenode")
+      print("Graph#changenode:payload", serpent.block(payload))
       local id, metadata
       id, metadata = payload.id, payload.metadata
       print("Graph#changenode:id", id)
-      return print("Graph#changenode:metadata", metadata)
+      print("Graph#changenode:metadata", metadata)
+      self.nodes[id]:set_metadata(metadata)
+      return payload
     end,
     addedge = function(self, payload)
-      print("Graph#addedge")
       local src, tgt, metadata
       src, tgt, metadata = payload.src, payload.tgt, payload.metadata
       self.edges[self:get_edge_name(src.node, src.port, tgt.node, tgt.port)] = Edge(payload)
       return payload
     end,
     removeedge = function(self, payload)
-      print("Graph#removeedge")
       local src, tgt
       src, tgt = payload.src, payload.tgt
       self.edges[self:get_edge_name(src.node, src.port, tgt.node, tgt.port)] = nil

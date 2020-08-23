@@ -60,14 +60,19 @@ class Graph
 
   changenode: (payload) =>
     print "Graph#changenode"
+    print "Graph#changenode:payload", serpent.block payload
 
     import id, metadata from payload
 
     print "Graph#changenode:id", id
     print "Graph#changenode:metadata", metadata
 
+    @nodes[id]\set_metadata metadata
+
+    payload
+
   addedge: (payload) =>
-    print "Graph#addedge"
+    -- print "Graph#addedge"
 
     import src, tgt, metadata from payload
 
@@ -76,7 +81,7 @@ class Graph
     payload
 
   removeedge: (payload) =>
-    print "Graph#removeedge"
+    -- print "Graph#removeedge"
 
     import src, tgt from payload
 
