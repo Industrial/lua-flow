@@ -5,10 +5,6 @@ local json = require("dkjson")
 local serpent = require("serpent")
 local RuntimeMessages = require("RuntimeMessages")
 local Network = require("Network")
-local RUNTIME_ID = "keyboardcat"
-local RUNTIME_LABEL = "LuaFlow"
-local RUNTIME_VERSION = "0.1"
-local RUNTIME_TYPE = "noflo"
 local Runtime
 do
   local _class_0
@@ -45,12 +41,6 @@ do
       end
       return print(output)
     end,
-    handle_command = function(self, protocol, command, payload)
-      command = "handle_" .. tostring(protocol) .. "_" .. tostring(command)
-      local error_message = "Unsupported Protocol Command: " .. tostring(protocol) .. ":" .. tostring(command)
-      local handler = assert(self[command], error_message)
-      return handler(self, payload)
-    end,
     handle_stream = function(self, stream)
       local request_headers = stream:get_headers()
       local response_headers = http_headers.new()
@@ -63,19 +53,19 @@ do
       ws:accept({
         headers = response_headers
       })
-      for txt, opcode in ws:each() do
-        local obj, pos, err = json.decode(txt, 1, nil)
+      for raw_input, raw_input_opcode in ws:each() do
+        local input, pos, err = json.decode(raw_input, 1, nil)
         if err then
           print("Error: " .. tostring(err))
           ws:close()
           break
         end
         local command, payload, protocol
-        command, payload, protocol = obj.command, obj.payload, obj.protocol
+        command, payload, protocol = input.command, input.payload, input.protocol
         self:log_command_in(protocol, command, payload)
-        local result = assert(self:handle_command(protocol, command, payload))
-        self:log_command_out(result)
-        ws:send((json.encode(result)), "text")
+        local output = assert((assert((assert(self.handlers[protocol]))[command]))(self, payload))
+        self:log_command_out(output)
+        ws:send((json.encode(output)), opcode)
       end
       return ws:close()
     end,
@@ -92,55 +82,80 @@ do
       print("Runtime: Listening on http://" .. tostring(self.host) .. ":" .. tostring(self.port))
       return self.server:loop()
     end,
-    handle_runtime_getruntime = function(self, payload)
-      return RuntimeMessages.runtime.output.Runtime({
-        id = RUNTIME_ID,
-        label = RUNTIME_LABEL,
-        version = RUNTIME_VERSION,
-        type = RUNTIME_TYPE,
-        capabilities = {
-          "protocol:graph",
-          "protocol:network",
-          "protocol:runtime"
-        }
-      })
-    end,
-    handle_graph_clear = function(self, payload)
-      local id
-      id = payload.id
-      local graph = self.network:ensure_graph({
-        id = id
-      })
-      local result = graph:clear(payload)
-      return RuntimeMessages.graph.output.Clear(result)
-    end,
-    handle_graph_addedge = function(self, payload)
-      local graph, metadata, src, tgt
-      graph, metadata, src, tgt = payload.graph, payload.metadata, payload.src, payload.tgt
-      graph = self.network:ensure_graph({
-        id = graph
-      })
-      local result = graph:addedge({
-        src = src,
-        tgt = tgt,
-        metadata = metadata
-      })
-      return RuntimeMessages.graph.output.AddEdge(result)
-    end,
-    handle_graph_changenode = function(self, payload)
-      print("Runtime#handle_graph_changenode")
-      print("Runtime#handle_graph_changenode:payload", serpent.block(payload))
-      local graph, id, metadata
-      graph, id, metadata = payload.graph, payload.id, payload.metadata
-      graph = self.network:ensure_graph({
-        id = graph
-      })
-      local result = graph:changenode({
-        id = id,
-        metadata = metadata
-      })
-      return RuntimeMessages.graph.output.ChangeNode(result)
-    end
+    handlers = {
+      component = { },
+      graph = {
+        addedge = function(self, payload)
+          local input_message = RuntimeMessages.graph.input.addedge(payload)
+          local graph, metadata, src, tgt
+          do
+            local _obj_0 = input_message.payload
+            graph, metadata, src, tgt = _obj_0.graph, _obj_0.metadata, _obj_0.src, _obj_0.tgt
+          end
+          graph = self.network:ensure_graph({
+            id = graph
+          })
+          local result = graph:addedge({
+            src = src,
+            tgt = tgt,
+            metadata = metadata
+          })
+          local output_message = RuntimeMessages.graph.output.addedge(result)
+          return output_message
+        end,
+        changenode = function(self, payload)
+          print("Runtime#handlers.graph.changenode")
+          local input_message = RuntimeMessages.graph.input.changenode(payload)
+          print("Runtime#handlers.graph.input_message", serpent.block(input_message))
+          local graph, id, metadata
+          do
+            local _obj_0 = input_message.payload
+            graph, id, metadata = _obj_0.graph, _obj_0.id, _obj_0.metadata
+          end
+          graph = self.network:ensure_graph({
+            id = graph
+          })
+          local result = graph:changenode({
+            id = id,
+            metadata = metadata
+          })
+          print("Runtime#handlers.graph.result", serpent.block(result))
+          local output_message = RuntimeMessages.graph.output.changenode(result)
+          print("Runtime#handlers.graph.output_message", serpent.block(output_message))
+          return output_message
+        end,
+        clear = function(self, payload)
+          local input_message = RuntimeMessages.graph.input.clear(payload)
+          local id
+          id = input_message.payload.id
+          local graph = self.network:ensure_graph({
+            id = id
+          })
+          local result = graph:clear(payload)
+          local output_message = RuntimeMessages.graph.output.clear(result)
+          return output_message
+        end
+      },
+      network = { },
+      runtime = {
+        getruntime = function(self, payload)
+          local input_message = RuntimeMessages.runtime.input.getruntime(payload)
+          local output_message = RuntimeMessages.runtime.output.runtime({
+            id = "lua-flow",
+            label = "LuaFlow",
+            version = "0.1",
+            type = "noflo",
+            capabilities = {
+              "protocol:graph",
+              "protocol:network",
+              "protocol:runtime"
+            }
+          })
+          return output_message
+        end
+      },
+      trace = { }
+    }
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({

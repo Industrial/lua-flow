@@ -7,11 +7,6 @@ serpent = require "serpent"
 RuntimeMessages = require "RuntimeMessages"
 Network = require "Network"
 
-RUNTIME_ID = "keyboardcat"
-RUNTIME_LABEL = "LuaFlow"
-RUNTIME_VERSION = "0.1"
-RUNTIME_TYPE = "noflo"
-
 class Runtime
   new: (options) =>
     -- print "Runtime#new"
@@ -72,14 +67,6 @@ class Runtime
 
     print output
 
-  handle_command: (protocol, command, payload) =>
-    -- print "Runtime#handle_command"
-
-    command = "handle_#{protocol}_#{command}"
-    error_message = "Unsupported Protocol Command: #{protocol}:#{command}"
-    handler = assert self[command], error_message
-    handler self, payload
-
   handle_stream: (stream) =>
     -- print "Runtime#handle_stream"
 
@@ -96,21 +83,23 @@ class Runtime
     ws\accept
       headers: response_headers
 
-    for txt, opcode in ws\each!
-      obj, pos, err = json.decode txt, 1, nil
+    for raw_input, raw_input_opcode in ws\each!
+      input, pos, err = json.decode raw_input, 1, nil
 
       if err
         print "Error: #{err}"
         ws\close!
         break
 
-      import command, payload, protocol from obj
+      import command, payload, protocol from input
 
       @log_command_in protocol, command, payload
-      result = assert @handle_command protocol, command, payload
-      @log_command_out result
 
-      ws\send (json.encode result), "text"
+      output = assert (assert (assert self.handlers[protocol])[command]) self, payload
+
+      @log_command_out output
+
+      ws\send (json.encode output), opcode
 
     ws\close!
 
@@ -132,67 +121,118 @@ class Runtime
 
     @server\loop!
 
-  handle_runtime_getruntime: (payload) =>
-    -- print "Runtime#handle_runtime_getruntime"
+  handlers:
+    component: {}
 
-    RuntimeMessages.runtime.output.Runtime
-      id: RUNTIME_ID
-      label: RUNTIME_LABEL
-      version: RUNTIME_VERSION
-      type: RUNTIME_TYPE
-      capabilities: {
-        -- "component:getsource",
-        -- "component:setsource",
-        -- "graph:readonly",
-        -- "network:control",
-        -- "network:data",
-        -- "network:persist",
-        -- "network:status",
-        -- "protocol:component",
-        "protocol:graph",
-        "protocol:network",
-        "protocol:runtime",
-        -- "protocol:trace",
-      }
+    graph:
+      addedge: (payload) =>
+        -- print "Runtime#handlers.graph.addedge"
 
-  handle_graph_clear: (payload) =>
-    -- print "Runtime#handle_graph_clear"
+        input_message = RuntimeMessages.graph.input.addedge payload
 
-    import id from payload
+        -- print "Runtime#handlers.graph.addedge:input_message", serpent.block input_message
 
-    graph = @network\ensure_graph
-      id: id
+        import graph, metadata, src, tgt from input_message.payload
 
-    result = graph\clear payload
+        graph = @network\ensure_graph
+          id: graph
 
-    RuntimeMessages.graph.output.Clear result
+        -- print "Runtime#handlers.graph.addedge:graph", graph
 
-  handle_graph_addedge: (payload) =>
-    -- print "Runtime#handle_graph_addedge"
+        result = graph\addedge
+          src: src
+          tgt: tgt
+          metadata: metadata
 
-    import graph, metadata, src, tgt from payload
+        -- print "Runtime#handlers.graph.addedge:result", result
 
-    graph = @network\ensure_graph
-      id: graph
+        output_message = RuntimeMessages.graph.output.addedge result
 
-    result = graph\addedge
-      src: src
-      tgt: tgt
-      metadata: metadata
+        -- print "Runtime#handlers.graph.addedge:output_message", output_message
 
-    RuntimeMessages.graph.output.AddEdge result
+        output_message
 
-  handle_graph_changenode: (payload) =>
-    print "Runtime#handle_graph_changenode"
-    print "Runtime#handle_graph_changenode:payload", serpent.block payload
+      changenode: (payload) =>
+        print "Runtime#handlers.graph.changenode"
 
-    import graph, id, metadata from payload
+        input_message = RuntimeMessages.graph.input.changenode payload
 
-    graph = @network\ensure_graph
-      id: graph
+        print "Runtime#handlers.graph.input_message", serpent.block input_message
 
-    result = graph\changenode
-      id: id
-      metadata: metadata
+        import graph, id, metadata from input_message.payload
 
-    RuntimeMessages.graph.output.ChangeNode result
+        graph = @network\ensure_graph
+          id: graph
+
+        -- print "Runtime#handlers.graph.graph", graph
+
+        result = graph\changenode
+          id: id
+          metadata: metadata
+
+        print "Runtime#handlers.graph.result", serpent.block result
+
+        output_message = RuntimeMessages.graph.output.changenode result
+
+        print "Runtime#handlers.graph.output_message", serpent.block output_message
+
+        output_message
+
+      clear: (payload) =>
+        -- print "Runtime#handlers.graph.clear"
+
+        input_message = RuntimeMessages.graph.input.clear payload
+
+        import id from input_message.payload
+
+        -- print "Runtime#handlers.graph.clear:input_message", serpent.block input_message
+
+        graph = @network\ensure_graph id: id
+
+        -- print "Runtime#handlers.graph.clear:graph", graph
+
+        result = graph\clear payload
+
+        -- print "Runtime#handlers.graph.clear:result", result
+
+        output_message = RuntimeMessages.graph.output.clear result
+
+        -- print "Runtime#handlers.graph.clear:output_message", output_message
+
+        output_message
+
+    network: {}
+
+    runtime:
+      getruntime: (payload) =>
+        -- print "Runtime#handlers.runtime.getruntime"
+
+        input_message = RuntimeMessages.runtime.input.getruntime payload
+
+        -- print "Runtime#handlers.runtime.getruntime:input_message", input_message
+
+        output_message = RuntimeMessages.runtime.output.runtime
+          id: "lua-flow"
+          label: "LuaFlow"
+          version: "0.1"
+          type: "noflo"
+          capabilities: {
+            -- "component:getsource",
+            -- "component:setsource",
+            -- "graph:readonly",
+            -- "network:control",
+            -- "network:data",
+            -- "network:persist",
+            -- "network:status",
+            -- "protocol:component",
+            "protocol:graph",
+            "protocol:network",
+            "protocol:runtime",
+            -- "protocol:trace",
+          }
+
+        -- print "Runtime#handlers.runtime.getruntime:output_message", output_message
+
+        output_message
+
+    trace: {}

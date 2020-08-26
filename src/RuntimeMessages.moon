@@ -1,38 +1,41 @@
-json = require "dkjson"
+serpent = require "serpent"
 
--- This class defines the output structures for the runtime
 class RuntimeMessages
   component:
-    -- input:
-    --   GetSource: (options) ->
-    --     {
-    --       protocol: "component"
-    --       command: "getsource"
-    --       payload:
-    --         name: options.name
-    --     }
-    --
-    --   List: (options) ->
-    --     {
-    --       protocol: "component"
-    --       command: "list"
-    --       payload: {}
-    --     }
-    --
-    --   Source: (options) ->
-    --     {
-    --       protocol: "component"
-    --       command: "source"
-    --       payload:
-    --         name: options.name
-    --         language: options.language
-    --         library: options.library
-    --         code: options.code
-    --         tests: options.tests
-    --     }
+    input:
+      getsource: (options) ->
+        -- print "RuntimeMessages.component.input.getsource:options", serpent.block options
+        {
+          protocol: "component"
+          command: "getsource"
+          payload:
+            name: options.name
+        }
+
+      list: (options) ->
+        -- print "RuntimeMessages.component.input.list:options", serpent.block options
+        {
+          protocol: "component"
+          command: "list"
+          payload: {}
+        }
+
+      source: (options) ->
+        -- print "RuntimeMessages.component.input.source:options", serpent.block options
+        {
+          protocol: "component"
+          command: "source"
+          payload:
+            name: options.name
+            language: options.language
+            library: options.library
+            code: options.code
+            tests: options.tests
+        }
 
     output:
-      Component: (options) ->
+      component: (options) ->
+        -- print "RuntimeMessages.component.output.component:options", serpent.block options
         {
           protocol: "component"
           command: "component"
@@ -45,14 +48,16 @@ class RuntimeMessages
             outPorts: options.outPorts
         }
 
-      ComponentsReady: (options) ->
+      componentsready: (options) ->
+        -- print "RuntimeMessages.component.output.componentsready:options", serpent.block options
         {
           protocol: "component"
           command: "componentsready"
           payload: options.count
         }
 
-      Error: (options) ->
+      error: (options) ->
+        -- print "RuntimeMessages.component.output.error:options", serpent.block options
         {
           protocol: "component"
           command: "error"
@@ -60,7 +65,8 @@ class RuntimeMessages
             message: options.message
         }
 
-      Source: (options) ->
+      source: (options) ->
+        -- print "RuntimeMessages.component.output.source:options", serpent.block options
         {
           protocol: "component"
           command: "source"
@@ -73,108 +79,53 @@ class RuntimeMessages
         }
 
   graph:
-    -- input:
-    --   AddEdge: (options) ->
-    --     {}
-    --
-    --   AddGroup: (options) ->
-    --     {}
-    --
-    --   AddInitial: (options) ->
-    --     {}
-    --
-    --   AddInPort: (options) ->
-    --     {}
-    --
-    --   AddNode: (options) ->
-    --     {}
-    --
-    --   AddOutPort: (options) ->
-    --     {}
-    --
-    --   ChangeEdge: (options) ->
-    --     {}
-    --
-    --   ChangeGroup: (options) ->
-    --     {}
-    --
-    --   ChangeNode: (options) ->
-    --     {}
-    --
-    --   Clear: (options) ->
-    --     {}
-    --
-    --   Error: (options) ->
-    --     {
-    --       protocol: "graph"
-    --       command: "error"
-    --       payload:
-    --         message: options.message
-    --     }
-    --
-    --   RemoveEdge: (options) ->
-    --     {}
-    --
-    --   RemoveGroup: (options) ->
-    --     {}
-    --
-    --   RemoveInitial: (options) ->
-    --     {}
-    --
-    --   RemoveInPort: (options) ->
-    --     {}
-    --
-    --   RemoveNode: (options) ->
-    --     {}
-    --
-    --   RemoveOutPort: (options) ->
-    --     {}
-    --
-    --   RenameGroup: (options) ->
-    --     {}
-    --
-    --   RenameInPort: (options) ->
-    --     {}
-    --
-    --   RenameNode: (options) ->
-    --     {}
-    --
-    --   RenameOutPort: (options) ->
-    --     {}
-
-    output:
-      AddEdge: (options) ->
+    input:
+      addedge: (options) ->
+        -- print "RuntimeMessages.graph.input.addedge:options", serpent.block options
         {
           protocol: "graph"
           command: "addedge"
           payload:
-            src: options.src
-            tgt: options.tgt
+            graph: options.graph
             metadata: options.metadata
+            src:
+              node: options.src.node
+              port: options.src.port
+            tgt:
+              node: options.tgt.node
+              port: options.tgt.port
         }
 
-      AddGroup: (options) ->
+      addgroup: (options) ->
+        print "RuntimeMessages.graph.input.addgroup:options", serpent.block options
         {}
 
-      AddInitial: (options) ->
+      addinitial: (options) ->
+        print "RuntimeMessages.graph.input.addinitial:options", serpent.block options
         {}
 
-      AddInPort: (options) ->
+      addinport: (options) ->
+        print "RuntimeMessages.graph.input.addinport:options", serpent.block options
         {}
 
-      AddNode: (options) ->
+      addnode: (options) ->
+        print "RuntimeMessages.graph.input.addnode:options", serpent.block options
         {}
 
-      AddOutPort: (options) ->
+      addoutport: (options) ->
+        print "RuntimeMessages.graph.input.addoutport:options", serpent.block options
         {}
 
-      ChangeEdge: (options) ->
+      changeedge: (options) ->
+        print "RuntimeMessages.graph.input.changeedge:options", serpent.block options
         {}
 
-      ChangeGroup: (options) ->
+      changegroup: (options) ->
+        print "RuntimeMessages.graph.input.changegroup:options", serpent.block options
         {}
 
-      ChangeNode: (options) ->
+      changenode: (options) ->
+        -- print "RuntimeMessages.graph.input.changenode:options", serpent.block options
         {
           protocol: "graph"
           command: "changenode"
@@ -184,7 +135,8 @@ class RuntimeMessages
             metadata: options.metadata
         }
 
-      Clear: (options) ->
+      clear: (options) ->
+        -- print "RuntimeMessages.graph.input.clear:options", serpent.block options
         {
           protocol: "graph"
           command: "clear"
@@ -194,7 +146,8 @@ class RuntimeMessages
             baseDir: options.baseDir
         }
 
-      Error: (options) ->
+      error: (options) ->
+        -- print "RuntimeMessages.graph.input.error:options", serpent.block options
         {
           protocol: "graph"
           command: "error"
@@ -202,76 +155,210 @@ class RuntimeMessages
             message: options.message
         }
 
-      RemoveEdge: (options) ->
+      removeedge: (options) ->
+        print "RuntimeMessages.graph.input.removeedge:options", serpent.block options
         {}
 
-      RemoveGroup: (options) ->
+      removegroup: (options) ->
+        print "RuntimeMessages.graph.input.removegroup:options", serpent.block options
         {}
 
-      RemoveInitial: (options) ->
+      removeinitial: (options) ->
+        print "RuntimeMessages.graph.input.removeinitial:options", serpent.block options
         {}
 
-      RemoveInPort: (options) ->
+      removeinport: (options) ->
+        print "RuntimeMessages.graph.input.removeinport:options", serpent.block options
         {}
 
-      RemoveNode: (options) ->
+      removenode: (options) ->
+        print "RuntimeMessages.graph.input.removenode:options", serpent.block options
         {}
 
-      RemoveOutPort: (options) ->
+      removeoutport: (options) ->
+        print "RuntimeMessages.graph.input.removeoutport:options", serpent.block options
         {}
 
-      RenameGroup: (options) ->
+      renamegroup: (options) ->
+        print "RuntimeMessages.graph.input.renamegroup:options", serpent.block options
         {}
 
-      RenameInPort: (options) ->
+      renameinport: (options) ->
+        print "RuntimeMessages.graph.input.renameinport:options", serpent.block options
         {}
 
-      RenameNode: (options) ->
+      renamenode: (options) ->
+        print "RuntimeMessages.graph.input.renamenode:options", serpent.block options
         {}
 
-      RenameOutPort: (options) ->
+      renameoutport: (options) ->
+        print "RuntimeMessages.graph.input.renameoutport:options", serpent.block options
+        {}
+
+    output:
+      addedge: (options) ->
+        -- print "RuntimeMessages.graph.output.addedge:options", serpent.block options
+        {
+          protocol: "graph"
+          command: "addedge"
+          payload:
+            src: options.src
+            tgt: options.tgt
+            metadata: options.metadata
+        }
+
+      addgroup: (options) ->
+        print "RuntimeMessages.graph.output.addgroup:options", serpent.block options
+        {}
+
+      addinitial: (options) ->
+        print "RuntimeMessages.graph.output.addinitial:options", serpent.block options
+        {}
+
+      addinport: (options) ->
+        print "RuntimeMessages.graph.output.addinport:options", serpent.block options
+        {}
+
+      addnode: (options) ->
+        print "RuntimeMessages.graph.output.addnode:options", serpent.block options
+        {}
+
+      addoutport: (options) ->
+        print "RuntimeMessages.graph.output.addoutport:options", serpent.block options
+        {}
+
+      changeedge: (options) ->
+        print "RuntimeMessages.graph.output.changeedge:options", serpent.block options
+        {}
+
+      changegroup: (options) ->
+        print "RuntimeMessages.graph.output.changegroup:options", serpent.block options
+        {}
+
+      changenode: (options) ->
+        -- print "RuntimeMessages.graph.output.changenode:options", serpent.block options
+        {
+          protocol: "graph"
+          command: "changenode"
+          payload:
+            graph: options.graph
+            id: options.id
+            metadata: options.metadata
+        }
+
+      clear: (options) ->
+        -- print "RuntimeMessages.graph.output.clear:options", serpent.block options
+        {
+          protocol: "graph"
+          command: "clear"
+          payload:
+            id: options.id
+            main: options.main
+            baseDir: options.baseDir
+        }
+
+      error: (options) ->
+        -- print "RuntimeMessages.graph.output.error:options", serpent.block options
+        {
+          protocol: "graph"
+          command: "error"
+          payload:
+            message: options.message
+        }
+
+      removeedge: (options) ->
+        print "RuntimeMessages.graph.output.removeedge:options", serpent.block options
+        {}
+
+      removegroup: (options) ->
+        print "RuntimeMessages.graph.output.removegroup:options", serpent.block options
+        {}
+
+      removeinitial: (options) ->
+        print "RuntimeMessages.graph.output.removeinitial:options", serpent.block options
+        {}
+
+      removeinport: (options) ->
+        print "RuntimeMessages.graph.output.removeinport:options", serpent.block options
+        {}
+
+      removenode: (options) ->
+        print "RuntimeMessages.graph.output.removenode:options", serpent.block options
+        {}
+
+      removeoutport: (options) ->
+        print "RuntimeMessages.graph.output.removeoutport:options", serpent.block options
+        {}
+
+      renamegroup: (options) ->
+        print "RuntimeMessages.graph.output.renamegroup:options", serpent.block options
+        {}
+
+      renameinport: (options) ->
+        print "RuntimeMessages.graph.output.renameinport:options", serpent.block options
+        {}
+
+      renamenode: (options) ->
+        print "RuntimeMessages.graph.output.renamenode:options", serpent.block options
+        {}
+
+      renameoutport: (options) ->
+        print "RuntimeMessages.graph.output.renameoutport:options", serpent.block options
         {}
 
   network:
-    -- input:
-    --   Debug: (options) ->
-    --     {}
-    --
-    --   Edges: (options) ->
-    --     {}
-    --
-    --   GetStatus: (options) ->
-    --     {}
-    --
-    --   Persist: (options) ->
-    --     {}
-    --
-    --   Start: (options) ->
-    --     {}
-    --
-    --   Stop: (options) ->
-    --     {}
+    input:
+      debug: (options) ->
+        print "RuntimeMessages.network.input.debug:options", serpent.block options
+        {}
+
+      edges: (options) ->
+        print "RuntimeMessages.network.input.edges:options", serpent.block options
+        {}
+
+      getstatus: (options) ->
+        print "RuntimeMessages.network.input.getstatus:options", serpent.block options
+        {}
+
+      persist: (options) ->
+        print "RuntimeMessages.network.input.persist:options", serpent.block options
+        {}
+
+      start: (options) ->
+        print "RuntimeMessages.network.input.start:options", serpent.block options
+        {}
+
+      stop: (options) ->
+        print "RuntimeMessages.network.input.stop:options", serpent.block options
+        {}
 
     output:
-      BeginGroup: (options) ->
+      begingroup: (options) ->
+        print "RuntimeMessages.network.output.begingroup:options", serpent.block options
         {}
 
-      Connect: (options) ->
+      connect: (options) ->
+        print "RuntimeMessages.network.output.connect:options", serpent.block options
         {}
 
-      Data: (options) ->
+      data: (options) ->
+        print "RuntimeMessages.network.output.data:options", serpent.block options
         {}
 
-      Disconnect: (options) ->
+      disconnect: (options) ->
+        print "RuntimeMessages.network.output.disconnect:options", serpent.block options
         {}
 
-      Edges: (options) ->
+      edges: (options) ->
+        print "RuntimeMessages.network.output.edges:options", serpent.block options
         {}
 
-      EndGroup: (options) ->
+      endgroup: (options) ->
+        print "RuntimeMessages.network.output.endgroup:options", serpent.block options
         {}
 
-      Error: (options) ->
+      error: (options) ->
+        -- print "RuntimeMessages.network.output.error:options", serpent.block options
         {
           protocol: "network"
           command: "error"
@@ -279,57 +366,43 @@ class RuntimeMessages
             message: options.message
         }
 
-      Icon: (options) ->
+      icon: (options) ->
+        print "RuntimeMessages.network.output.icon:options", serpent.block options
         {}
 
-      Output: (options) ->
+      output: (options) ->
+        print "RuntimeMessages.network.output.output:options", serpent.block options
         {}
 
-      ProcessError: (options) ->
+      processerror: (options) ->
+        print "RuntimeMessages.network.output.processerror:options", serpent.block options
         {}
 
-      Started: (options) ->
+      started: (options) ->
+        print "RuntimeMessages.network.output.started:options", serpent.block options
         {}
 
-      Status: (options) ->
+      status: (options) ->
+        print "RuntimeMessages.network.output.status:options", serpent.block options
         {}
 
-      Stop: (options) ->
+      stop: (options) ->
+        print "RuntimeMessages.network.output.stop:options", serpent.block options
         {}
 
   runtime:
-    -- input:
-    --   GetRuntime: (options) ->
-    --     {
-    --       protocol: "runtime"
-    --       command: "getruntime"
-    --       payload:
-    --         secret: options.secret
-    --     }
-    --
-    --   Packet: (options) ->
-    --     {
-    --       protocol: "runtime"
-    --       command: "packet"
-    --       payload:
-    --         port: options.port
-    --         event: options.event
-    --         type: options.type
-    --         schema: options.schema
-    --         payload: options.payload
-    --         graph: options.graph
-    --     }
-
-    output:
-      Error: (options) ->
+    input:
+      getruntime: (options) ->
+        -- print "RuntimeMessages.runtime.input.getruntime:options", serpent.block options
         {
           protocol: "runtime"
-          command: "error"
+          command: "getruntime"
           payload:
-            message: options.message
+            secret: options.secret
         }
 
-      Packet: (options) ->
+      packet: (options) ->
+        -- print "RuntimeMessages.runtime.input.packet:options", serpent.block options
         {
           protocol: "runtime"
           command: "packet"
@@ -342,14 +415,40 @@ class RuntimeMessages
             graph: options.graph
         }
 
-      PacketSent: (options) ->
+    output:
+      error: (options) ->
+        -- print "RuntimeMessages.runtime.output.error:options", serpent.block options
+        {
+          protocol: "runtime"
+          command: "error"
+          payload:
+            message: options.message
+        }
+
+      packet: (options) ->
+        -- print "RuntimeMessages.runtime.output.packet:options", serpent.block options
+        {
+          protocol: "runtime"
+          command: "packet"
+          payload:
+            port: options.port
+            event: options.event
+            type: options.type
+            schema: options.schema
+            payload: options.payload
+            graph: options.graph
+        }
+
+      packetsent: (options) ->
+        -- print "RuntimeMessages.runtime.output.packetsent:options", serpent.block options
         {
           protocol: "runtime"
           command: "packetsent"
           payload: {}
         }
 
-      Ports: (options) ->
+      ports: (options) ->
+        -- print "RuntimeMessages.runtime.output.ports:options", serpent.block options
         {
           protocol: "runtime"
           command: "ports"
@@ -359,7 +458,8 @@ class RuntimeMessages
             graph: options.graph
         }
 
-      Runtime: (options) ->
+      runtime: (options) ->
+        -- print "RuntimeMessages.runtime.output.runtime:options", serpent.block options
         {
           protocol: "runtime"
           command: "runtime"
@@ -377,27 +477,34 @@ class RuntimeMessages
         }
 
   trace:
-    -- input:
-    --   Clear: (options) ->
-    --     {}
-    --
-    --   Dump: (options) ->
-    --     {}
-    --
-    --   Start: (options) ->
-    --     {}
-    --
-    --   Stop: (options) ->
-    --     {}
+    input:
+      clear: (options) ->
+        print "RuntimeMessages.trace.input.clear:options", serpent.block options
+        {}
+
+      dump: (options) ->
+        print "RuntimeMessages.trace.input.dump:options", serpent.block options
+        {}
+
+      start: (options) ->
+        print "RuntimeMessages.trace.input.start:options", serpent.block options
+        {}
+
+      stop: (options) ->
+        print "RuntimeMessages.trace.input.stop:options", serpent.block options
+        {}
 
     output:
-      Clear: (options) ->
+      clear: (options) ->
+        print "RuntimeMessages.trace.output.clear:options", serpent.block options
         {}
 
-      Dump: (options) ->
+      dump: (options) ->
+        print "RuntimeMessages.trace.output.dump:options", serpent.block options
         {}
 
-      Error: (options) ->
+      error: (options) ->
+        -- print "RuntimeMessages.trace.output.error:options", serpent.block options
         {
           protocol: "trace"
           command: "error"
@@ -405,8 +512,10 @@ class RuntimeMessages
             message: options.message
         }
 
-      Start: (options) ->
+      start: (options) ->
+        print "RuntimeMessages.trace.output.start:options", serpent.block options
         {}
 
-      Stop: (options) ->
+      stop: (options) ->
+        print "RuntimeMessages.trace.output.stop:options", serpent.block options
         {}

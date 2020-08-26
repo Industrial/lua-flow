@@ -55,7 +55,7 @@ class Graph
     import id, metadata from payload
 
     print "Graph#changenode:id", id
-    print "Graph#changenode:metadata", metadata
+    print "Graph#changenode:metadata", serpent.block metadata
 
     @nodes[id]\set_metadata metadata
 

@@ -1,11 +1,42 @@
-local json = require("dkjson")
+local serpent = require("serpent")
 local RuntimeMessages
 do
   local _class_0
   local _base_0 = {
     component = {
+      input = {
+        getsource = function(options)
+          return {
+            protocol = "component",
+            command = "getsource",
+            payload = {
+              name = options.name
+            }
+          }
+        end,
+        list = function(options)
+          return {
+            protocol = "component",
+            command = "list",
+            payload = { }
+          }
+        end,
+        source = function(options)
+          return {
+            protocol = "component",
+            command = "source",
+            payload = {
+              name = options.name,
+              language = options.language,
+              library = options.library,
+              code = options.code,
+              tests = options.tests
+            }
+          }
+        end
+      },
       output = {
-        Component = function(options)
+        component = function(options)
           return {
             protocol = "component",
             command = "component",
@@ -19,14 +50,14 @@ do
             }
           }
         end,
-        ComponentsReady = function(options)
+        componentsready = function(options)
           return {
             protocol = "component",
             command = "componentsready",
             payload = options.count
           }
         end,
-        Error = function(options)
+        error = function(options)
           return {
             protocol = "component",
             command = "error",
@@ -35,7 +66,7 @@ do
             }
           }
         end,
-        Source = function(options)
+        source = function(options)
           return {
             protocol = "component",
             command = "source",
@@ -51,40 +82,54 @@ do
       }
     },
     graph = {
-      output = {
-        AddEdge = function(options)
+      input = {
+        addedge = function(options)
           return {
             protocol = "graph",
             command = "addedge",
             payload = {
-              src = options.src,
-              tgt = options.tgt,
-              metadata = options.metadata
+              graph = options.graph,
+              metadata = options.metadata,
+              src = {
+                node = options.src.node,
+                port = options.src.port
+              },
+              tgt = {
+                node = options.tgt.node,
+                port = options.tgt.port
+              }
             }
           }
         end,
-        AddGroup = function(options)
+        addgroup = function(options)
+          print("RuntimeMessages.graph.input.addgroup:options", serpent.block(options))
           return { }
         end,
-        AddInitial = function(options)
+        addinitial = function(options)
+          print("RuntimeMessages.graph.input.addinitial:options", serpent.block(options))
           return { }
         end,
-        AddInPort = function(options)
+        addinport = function(options)
+          print("RuntimeMessages.graph.input.addinport:options", serpent.block(options))
           return { }
         end,
-        AddNode = function(options)
+        addnode = function(options)
+          print("RuntimeMessages.graph.input.addnode:options", serpent.block(options))
           return { }
         end,
-        AddOutPort = function(options)
+        addoutport = function(options)
+          print("RuntimeMessages.graph.input.addoutport:options", serpent.block(options))
           return { }
         end,
-        ChangeEdge = function(options)
+        changeedge = function(options)
+          print("RuntimeMessages.graph.input.changeedge:options", serpent.block(options))
           return { }
         end,
-        ChangeGroup = function(options)
+        changegroup = function(options)
+          print("RuntimeMessages.graph.input.changegroup:options", serpent.block(options))
           return { }
         end,
-        ChangeNode = function(options)
+        changenode = function(options)
           return {
             protocol = "graph",
             command = "changenode",
@@ -95,7 +140,7 @@ do
             }
           }
         end,
-        Clear = function(options)
+        clear = function(options)
           return {
             protocol = "graph",
             command = "clear",
@@ -106,7 +151,7 @@ do
             }
           }
         end,
-        Error = function(options)
+        error = function(options)
           return {
             protocol = "graph",
             command = "error",
@@ -115,59 +160,213 @@ do
             }
           }
         end,
-        RemoveEdge = function(options)
+        removeedge = function(options)
+          print("RuntimeMessages.graph.input.removeedge:options", serpent.block(options))
           return { }
         end,
-        RemoveGroup = function(options)
+        removegroup = function(options)
+          print("RuntimeMessages.graph.input.removegroup:options", serpent.block(options))
           return { }
         end,
-        RemoveInitial = function(options)
+        removeinitial = function(options)
+          print("RuntimeMessages.graph.input.removeinitial:options", serpent.block(options))
           return { }
         end,
-        RemoveInPort = function(options)
+        removeinport = function(options)
+          print("RuntimeMessages.graph.input.removeinport:options", serpent.block(options))
           return { }
         end,
-        RemoveNode = function(options)
+        removenode = function(options)
+          print("RuntimeMessages.graph.input.removenode:options", serpent.block(options))
           return { }
         end,
-        RemoveOutPort = function(options)
+        removeoutport = function(options)
+          print("RuntimeMessages.graph.input.removeoutport:options", serpent.block(options))
           return { }
         end,
-        RenameGroup = function(options)
+        renamegroup = function(options)
+          print("RuntimeMessages.graph.input.renamegroup:options", serpent.block(options))
           return { }
         end,
-        RenameInPort = function(options)
+        renameinport = function(options)
+          print("RuntimeMessages.graph.input.renameinport:options", serpent.block(options))
           return { }
         end,
-        RenameNode = function(options)
+        renamenode = function(options)
+          print("RuntimeMessages.graph.input.renamenode:options", serpent.block(options))
           return { }
         end,
-        RenameOutPort = function(options)
+        renameoutport = function(options)
+          print("RuntimeMessages.graph.input.renameoutport:options", serpent.block(options))
+          return { }
+        end
+      },
+      output = {
+        addedge = function(options)
+          return {
+            protocol = "graph",
+            command = "addedge",
+            payload = {
+              src = options.src,
+              tgt = options.tgt,
+              metadata = options.metadata
+            }
+          }
+        end,
+        addgroup = function(options)
+          print("RuntimeMessages.graph.output.addgroup:options", serpent.block(options))
+          return { }
+        end,
+        addinitial = function(options)
+          print("RuntimeMessages.graph.output.addinitial:options", serpent.block(options))
+          return { }
+        end,
+        addinport = function(options)
+          print("RuntimeMessages.graph.output.addinport:options", serpent.block(options))
+          return { }
+        end,
+        addnode = function(options)
+          print("RuntimeMessages.graph.output.addnode:options", serpent.block(options))
+          return { }
+        end,
+        addoutport = function(options)
+          print("RuntimeMessages.graph.output.addoutport:options", serpent.block(options))
+          return { }
+        end,
+        changeedge = function(options)
+          print("RuntimeMessages.graph.output.changeedge:options", serpent.block(options))
+          return { }
+        end,
+        changegroup = function(options)
+          print("RuntimeMessages.graph.output.changegroup:options", serpent.block(options))
+          return { }
+        end,
+        changenode = function(options)
+          return {
+            protocol = "graph",
+            command = "changenode",
+            payload = {
+              graph = options.graph,
+              id = options.id,
+              metadata = options.metadata
+            }
+          }
+        end,
+        clear = function(options)
+          return {
+            protocol = "graph",
+            command = "clear",
+            payload = {
+              id = options.id,
+              main = options.main,
+              baseDir = options.baseDir
+            }
+          }
+        end,
+        error = function(options)
+          return {
+            protocol = "graph",
+            command = "error",
+            payload = {
+              message = options.message
+            }
+          }
+        end,
+        removeedge = function(options)
+          print("RuntimeMessages.graph.output.removeedge:options", serpent.block(options))
+          return { }
+        end,
+        removegroup = function(options)
+          print("RuntimeMessages.graph.output.removegroup:options", serpent.block(options))
+          return { }
+        end,
+        removeinitial = function(options)
+          print("RuntimeMessages.graph.output.removeinitial:options", serpent.block(options))
+          return { }
+        end,
+        removeinport = function(options)
+          print("RuntimeMessages.graph.output.removeinport:options", serpent.block(options))
+          return { }
+        end,
+        removenode = function(options)
+          print("RuntimeMessages.graph.output.removenode:options", serpent.block(options))
+          return { }
+        end,
+        removeoutport = function(options)
+          print("RuntimeMessages.graph.output.removeoutport:options", serpent.block(options))
+          return { }
+        end,
+        renamegroup = function(options)
+          print("RuntimeMessages.graph.output.renamegroup:options", serpent.block(options))
+          return { }
+        end,
+        renameinport = function(options)
+          print("RuntimeMessages.graph.output.renameinport:options", serpent.block(options))
+          return { }
+        end,
+        renamenode = function(options)
+          print("RuntimeMessages.graph.output.renamenode:options", serpent.block(options))
+          return { }
+        end,
+        renameoutport = function(options)
+          print("RuntimeMessages.graph.output.renameoutport:options", serpent.block(options))
           return { }
         end
       }
     },
     network = {
+      input = {
+        debug = function(options)
+          print("RuntimeMessages.network.input.debug:options", serpent.block(options))
+          return { }
+        end,
+        edges = function(options)
+          print("RuntimeMessages.network.input.edges:options", serpent.block(options))
+          return { }
+        end,
+        getstatus = function(options)
+          print("RuntimeMessages.network.input.getstatus:options", serpent.block(options))
+          return { }
+        end,
+        persist = function(options)
+          print("RuntimeMessages.network.input.persist:options", serpent.block(options))
+          return { }
+        end,
+        start = function(options)
+          print("RuntimeMessages.network.input.start:options", serpent.block(options))
+          return { }
+        end,
+        stop = function(options)
+          print("RuntimeMessages.network.input.stop:options", serpent.block(options))
+          return { }
+        end
+      },
       output = {
-        BeginGroup = function(options)
+        begingroup = function(options)
+          print("RuntimeMessages.network.output.begingroup:options", serpent.block(options))
           return { }
         end,
-        Connect = function(options)
+        connect = function(options)
+          print("RuntimeMessages.network.output.connect:options", serpent.block(options))
           return { }
         end,
-        Data = function(options)
+        data = function(options)
+          print("RuntimeMessages.network.output.data:options", serpent.block(options))
           return { }
         end,
-        Disconnect = function(options)
+        disconnect = function(options)
+          print("RuntimeMessages.network.output.disconnect:options", serpent.block(options))
           return { }
         end,
-        Edges = function(options)
+        edges = function(options)
+          print("RuntimeMessages.network.output.edges:options", serpent.block(options))
           return { }
         end,
-        EndGroup = function(options)
+        endgroup = function(options)
+          print("RuntimeMessages.network.output.endgroup:options", serpent.block(options))
           return { }
         end,
-        Error = function(options)
+        error = function(options)
           return {
             protocol = "network",
             command = "error",
@@ -176,29 +375,60 @@ do
             }
           }
         end,
-        Icon = function(options)
+        icon = function(options)
+          print("RuntimeMessages.network.output.icon:options", serpent.block(options))
           return { }
         end,
-        Output = function(options)
+        output = function(options)
+          print("RuntimeMessages.network.output.output:options", serpent.block(options))
           return { }
         end,
-        ProcessError = function(options)
+        processerror = function(options)
+          print("RuntimeMessages.network.output.processerror:options", serpent.block(options))
           return { }
         end,
-        Started = function(options)
+        started = function(options)
+          print("RuntimeMessages.network.output.started:options", serpent.block(options))
           return { }
         end,
-        Status = function(options)
+        status = function(options)
+          print("RuntimeMessages.network.output.status:options", serpent.block(options))
           return { }
         end,
-        Stop = function(options)
+        stop = function(options)
+          print("RuntimeMessages.network.output.stop:options", serpent.block(options))
           return { }
         end
       }
     },
     runtime = {
+      input = {
+        getruntime = function(options)
+          return {
+            protocol = "runtime",
+            command = "getruntime",
+            payload = {
+              secret = options.secret
+            }
+          }
+        end,
+        packet = function(options)
+          return {
+            protocol = "runtime",
+            command = "packet",
+            payload = {
+              port = options.port,
+              event = options.event,
+              type = options.type,
+              schema = options.schema,
+              payload = options.payload,
+              graph = options.graph
+            }
+          }
+        end
+      },
       output = {
-        Error = function(options)
+        error = function(options)
           return {
             protocol = "runtime",
             command = "error",
@@ -207,7 +437,7 @@ do
             }
           }
         end,
-        Packet = function(options)
+        packet = function(options)
           return {
             protocol = "runtime",
             command = "packet",
@@ -221,14 +451,14 @@ do
             }
           }
         end,
-        PacketSent = function(options)
+        packetsent = function(options)
           return {
             protocol = "runtime",
             command = "packetsent",
             payload = { }
           }
         end,
-        Ports = function(options)
+        ports = function(options)
           return {
             protocol = "runtime",
             command = "ports",
@@ -239,7 +469,7 @@ do
             }
           }
         end,
-        Runtime = function(options)
+        runtime = function(options)
           return {
             protocol = "runtime",
             command = "runtime",
@@ -260,14 +490,34 @@ do
       }
     },
     trace = {
+      input = {
+        clear = function(options)
+          print("RuntimeMessages.trace.input.clear:options", serpent.block(options))
+          return { }
+        end,
+        dump = function(options)
+          print("RuntimeMessages.trace.input.dump:options", serpent.block(options))
+          return { }
+        end,
+        start = function(options)
+          print("RuntimeMessages.trace.input.start:options", serpent.block(options))
+          return { }
+        end,
+        stop = function(options)
+          print("RuntimeMessages.trace.input.stop:options", serpent.block(options))
+          return { }
+        end
+      },
       output = {
-        Clear = function(options)
+        clear = function(options)
+          print("RuntimeMessages.trace.output.clear:options", serpent.block(options))
           return { }
         end,
-        Dump = function(options)
+        dump = function(options)
+          print("RuntimeMessages.trace.output.dump:options", serpent.block(options))
           return { }
         end,
-        Error = function(options)
+        error = function(options)
           return {
             protocol = "trace",
             command = "error",
@@ -276,10 +526,12 @@ do
             }
           }
         end,
-        Start = function(options)
+        start = function(options)
+          print("RuntimeMessages.trace.output.start:options", serpent.block(options))
           return { }
         end,
-        Stop = function(options)
+        stop = function(options)
+          print("RuntimeMessages.trace.output.stop:options", serpent.block(options))
           return { }
         end
       }

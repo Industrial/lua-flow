@@ -13,18 +13,25 @@ class Network
   add_graph: (options) =>
     -- print "Network#add_graph"
 
-    @graphs[options.id] = Graph
-      id: options.id
+    import id from options
+    assert id, "Network#add_graph:options.id"
+
+    @graphs[id] = Graph
+      id: id
 
   remove_graph: (options) =>
     -- print "Network#remove_graph"
 
-    @graphs[options.id] = nil
+    import id from options
+    assert id, "Network#remove_graph:options.id"
+
+    @graphs[id] = nil
 
   ensure_graph: (options) =>
     -- print "Network#ensure_graph"
 
     import id from options
+    assert id, "Network#ensure_graph:options.id"
 
     @graphs[id] = @graphs[id] or Graph id: id
     @graphs[id]

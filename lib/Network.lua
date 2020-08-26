@@ -4,16 +4,23 @@ do
   local _class_0
   local _base_0 = {
     add_graph = function(self, options)
-      self.graphs[options.id] = Graph({
-        id = options.id
+      local id
+      id = options.id
+      assert(id, "Network#add_graph:options.id")
+      self.graphs[id] = Graph({
+        id = id
       })
     end,
     remove_graph = function(self, options)
-      self.graphs[options.id] = nil
+      local id
+      id = options.id
+      assert(id, "Network#remove_graph:options.id")
+      self.graphs[id] = nil
     end,
     ensure_graph = function(self, options)
       local id
       id = options.id
+      assert(id, "Network#ensure_graph:options.id")
       self.graphs[id] = self.graphs[id] or Graph({
         id = id
       })
