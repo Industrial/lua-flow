@@ -63,7 +63,9 @@ do
         local command, payload, protocol
         command, payload, protocol = input.command, input.payload, input.protocol
         self:log_command_in(protocol, command, payload)
-        local output = assert((assert((assert(self.handlers[protocol]))[command]))(self, payload))
+        local handlers = assert(self.handlers[protocol], "No handlers for protocol '" .. tostring(protocol) .. "'")
+        local handler = assert(handlers[command], "No handler for command '" .. tostring(command) .. "'")
+        local output = assert((handler(self, payload)), "No output for command '" .. tostring(protocol) .. ":" .. tostring(command) .. "'")
         self:log_command_out(output)
         ws:send((json.encode(output)), opcode)
       end
@@ -84,6 +86,23 @@ do
     end,
     handlers = {
       component = { },
+      runtime = {
+        getruntime = function(self, payload)
+          local input_message = RuntimeMessages.runtime.input.getruntime(payload)
+          local output_message = RuntimeMessages.runtime.output.runtime({
+            id = "lua-flow",
+            label = "LuaFlow",
+            version = "0.1",
+            type = "noflo",
+            capabilities = {
+              "protocol:graph",
+              "protocol:network",
+              "protocol:runtime"
+            }
+          })
+          return output_message
+        end
+      },
       graph = {
         addedge = function(self, payload)
           local input_message = RuntimeMessages.graph.input.addedge(payload)
@@ -103,10 +122,30 @@ do
           local output_message = RuntimeMessages.graph.output.addedge(result)
           return output_message
         end,
+        addnode = function(self, payload)
+          local input_message = RuntimeMessages.graph.input.addnode(payload)
+          local graph, id, node, metadata
+          do
+            local _obj_0 = input_message.payload
+            graph, id, node, metadata = _obj_0.graph, _obj_0.id, _obj_0.node, _obj_0.metadata
+          end
+          (self.network:ensure_graph({
+            id = graph
+          })):addnode({
+            id = id,
+            metadata = metadata,
+            node = node
+          })
+          local output_message = RuntimeMessages.graph.output.addnode({
+            id = id,
+            metadata = metadata,
+            node = node,
+            graph = graph
+          })
+          return output_message
+        end,
         changenode = function(self, payload)
-          print("Runtime#handlers.graph.changenode")
           local input_message = RuntimeMessages.graph.input.changenode(payload)
-          print("Runtime#handlers.graph.input_message", serpent.block(input_message))
           local graph, id, metadata
           do
             local _obj_0 = input_message.payload
@@ -119,9 +158,7 @@ do
             id = id,
             metadata = metadata
           })
-          print("Runtime#handlers.graph.result", serpent.block(result))
           local output_message = RuntimeMessages.graph.output.changenode(result)
-          print("Runtime#handlers.graph.output_message", serpent.block(output_message))
           return output_message
         end,
         clear = function(self, payload)
@@ -137,23 +174,6 @@ do
         end
       },
       network = { },
-      runtime = {
-        getruntime = function(self, payload)
-          local input_message = RuntimeMessages.runtime.input.getruntime(payload)
-          local output_message = RuntimeMessages.runtime.output.runtime({
-            id = "lua-flow",
-            label = "LuaFlow",
-            version = "0.1",
-            type = "noflo",
-            capabilities = {
-              "protocol:graph",
-              "protocol:network",
-              "protocol:runtime"
-            }
-          })
-          return output_message
-        end
-      },
       trace = { }
     }
   }

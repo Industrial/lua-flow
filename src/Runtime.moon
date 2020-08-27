@@ -95,7 +95,9 @@ class Runtime
 
       @log_command_in protocol, command, payload
 
-      output = assert (assert (assert self.handlers[protocol])[command]) self, payload
+      handlers = assert self.handlers[protocol], "No handlers for protocol '#{protocol}'"
+      handler = assert handlers[command], "No handler for command '#{command}'"
+      output = assert (handler self, payload), "No output for command '#{protocol}:#{command}'"
 
       @log_command_out output
 
@@ -124,92 +126,9 @@ class Runtime
   handlers:
     component: {}
 
-    graph:
-      addedge: (payload) =>
-        -- print "Runtime#handlers.graph.addedge"
-
-        input_message = RuntimeMessages.graph.input.addedge payload
-
-        -- print "Runtime#handlers.graph.addedge:input_message", serpent.block input_message
-
-        import graph, metadata, src, tgt from input_message.payload
-
-        graph = @network\ensure_graph
-          id: graph
-
-        -- print "Runtime#handlers.graph.addedge:graph", graph
-
-        result = graph\addedge
-          src: src
-          tgt: tgt
-          metadata: metadata
-
-        -- print "Runtime#handlers.graph.addedge:result", result
-
-        output_message = RuntimeMessages.graph.output.addedge result
-
-        -- print "Runtime#handlers.graph.addedge:output_message", output_message
-
-        output_message
-
-      changenode: (payload) =>
-        print "Runtime#handlers.graph.changenode"
-
-        input_message = RuntimeMessages.graph.input.changenode payload
-
-        print "Runtime#handlers.graph.input_message", serpent.block input_message
-
-        import graph, id, metadata from input_message.payload
-
-        graph = @network\ensure_graph
-          id: graph
-
-        -- print "Runtime#handlers.graph.graph", graph
-
-        result = graph\changenode
-          id: id
-          metadata: metadata
-
-        print "Runtime#handlers.graph.result", serpent.block result
-
-        output_message = RuntimeMessages.graph.output.changenode result
-
-        print "Runtime#handlers.graph.output_message", serpent.block output_message
-
-        output_message
-
-      clear: (payload) =>
-        -- print "Runtime#handlers.graph.clear"
-
-        input_message = RuntimeMessages.graph.input.clear payload
-
-        import id from input_message.payload
-
-        -- print "Runtime#handlers.graph.clear:input_message", serpent.block input_message
-
-        graph = @network\ensure_graph id: id
-
-        -- print "Runtime#handlers.graph.clear:graph", graph
-
-        result = graph\clear payload
-
-        -- print "Runtime#handlers.graph.clear:result", result
-
-        output_message = RuntimeMessages.graph.output.clear result
-
-        -- print "Runtime#handlers.graph.clear:output_message", output_message
-
-        output_message
-
-    network: {}
-
     runtime:
       getruntime: (payload) =>
-        -- print "Runtime#handlers.runtime.getruntime"
-
         input_message = RuntimeMessages.runtime.input.getruntime payload
-
-        -- print "Runtime#handlers.runtime.getruntime:input_message", input_message
 
         output_message = RuntimeMessages.runtime.output.runtime
           id: "lua-flow"
@@ -231,8 +150,73 @@ class Runtime
             -- "protocol:trace",
           }
 
-        -- print "Runtime#handlers.runtime.getruntime:output_message", output_message
+        output_message
+
+    graph:
+      addedge: (payload) =>
+        input_message = RuntimeMessages.graph.input.addedge payload
+
+        import graph, metadata, src, tgt from input_message.payload
+
+        graph = @network\ensure_graph
+          id: graph
+
+        result = graph\addedge
+          src: src
+          tgt: tgt
+          metadata: metadata
+
+        output_message = RuntimeMessages.graph.output.addedge result
 
         output_message
+
+      addnode: (payload) =>
+        input_message = RuntimeMessages.graph.input.addnode payload
+
+        import graph, id, node, metadata from input_message.payload
+
+        (@network\ensure_graph id: graph)\addnode
+          id: id
+          metadata: metadata
+          node: node
+
+        output_message = RuntimeMessages.graph.output.addnode
+          id: id
+          metadata: metadata
+          node: node
+          graph: graph
+
+        output_message
+
+      changenode: (payload) =>
+        input_message = RuntimeMessages.graph.input.changenode payload
+
+        import graph, id, metadata from input_message.payload
+
+        graph = @network\ensure_graph
+          id: graph
+
+        result = graph\changenode
+          id: id
+          metadata: metadata
+
+        output_message = RuntimeMessages.graph.output.changenode result
+
+        output_message
+
+      clear: (payload) =>
+        input_message = RuntimeMessages.graph.input.clear payload
+
+        import id from input_message.payload
+
+        graph = @network\ensure_graph id: id
+
+        result = graph\clear payload
+
+        output_message = RuntimeMessages.graph.output.clear result
+
+        output_message
+
+    network: {}
 
     trace: {}

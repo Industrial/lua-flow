@@ -114,8 +114,16 @@ do
           return { }
         end,
         addnode = function(options)
-          print("RuntimeMessages.graph.input.addnode:options", serpent.block(options))
-          return { }
+          return {
+            protocol = "graph",
+            command = "addnode",
+            payload = {
+              node = options.component,
+              graph = options.graph,
+              id = options.id,
+              metadata = options.metadata
+            }
+          }
         end,
         addoutport = function(options)
           print("RuntimeMessages.graph.input.addoutport:options", serpent.block(options))
@@ -146,8 +154,7 @@ do
             command = "clear",
             payload = {
               id = options.id,
-              main = options.main,
-              baseDir = options.baseDir
+              main = options.main
             }
           }
         end,
@@ -226,8 +233,16 @@ do
           return { }
         end,
         addnode = function(options)
-          print("RuntimeMessages.graph.output.addnode:options", serpent.block(options))
-          return { }
+          return {
+            protocol = "graph",
+            command = "addnode",
+            payload = {
+              component = options.node,
+              graph = options.graph,
+              id = options.id,
+              metadata = options.metadata
+            }
+          }
         end,
         addoutport = function(options)
           print("RuntimeMessages.graph.output.addoutport:options", serpent.block(options))
@@ -258,8 +273,7 @@ do
             command = "clear",
             payload = {
               id = options.id,
-              main = options.main,
-              baseDir = options.baseDir
+              main = options.main
             }
           }
         end,

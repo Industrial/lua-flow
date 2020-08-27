@@ -1,5 +1,6 @@
-serpent = require "serpent"
+package.path = package.path .. ';./nodes/?.lua'
 
+serpent = require "serpent"
 Edge = require "Edge"
 
 class Graph
@@ -16,7 +17,6 @@ class Graph
     @running = false
     @started = false
     @start_time = nil
-    @base_dir = nil
 
   addedge: (payload) =>
     -- print "Graph#addedge"
@@ -37,7 +37,25 @@ class Graph
     print "Graph#addinport"
 
   addnode: (payload) =>
-    print "Graph#addnode"
+    -- print "Graph#addnode"
+
+    import id, node, metadata from payload
+
+    node_dots = node\gsub "/", "."
+
+    require_path = "nodes.#{node_dots}"
+
+    NodeClass = require require_path
+
+    @nodes[id] = NodeClass
+      id: id
+      metadata: metadata
+
+    {
+      id: id
+      metadata: metadata
+      node: node
+    }
 
   addoutport: (payload) =>
     print "Graph#addoutport"
@@ -64,7 +82,7 @@ class Graph
   clear: (payload) =>
     -- print "Graph#clear"
 
-    import id, main, baseDir from payload
+    import id, main from payload
 
     @id = id
     @nodes = {}
@@ -76,12 +94,10 @@ class Graph
     @running = false
     @started = false
     @start_time = nil
-    @base_dir = baseDir
 
     {
       id: @id
       main: @main
-      baseDir: @base_dir
     }
 
   debug: (payload) =>

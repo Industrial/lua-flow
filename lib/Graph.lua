@@ -1,3 +1,4 @@
+package.path = package.path .. ';./nodes/?.lua'
 local serpent = require("serpent")
 local Edge = require("Edge")
 local Graph
@@ -20,7 +21,20 @@ do
       return print("Graph#addinport")
     end,
     addnode = function(self, payload)
-      return print("Graph#addnode")
+      local id, node, metadata
+      id, node, metadata = payload.id, payload.node, payload.metadata
+      local node_dots = node:gsub("/", ".")
+      local require_path = "nodes." .. tostring(node_dots)
+      local NodeClass = require(require_path)
+      self.nodes[id] = NodeClass({
+        id = id,
+        metadata = metadata
+      })
+      return {
+        id = id,
+        metadata = metadata,
+        node = node
+      }
     end,
     addoutport = function(self, payload)
       return print("Graph#addoutport")
@@ -42,8 +56,8 @@ do
       return payload
     end,
     clear = function(self, payload)
-      local id, main, baseDir
-      id, main, baseDir = payload.id, payload.main, payload.baseDir
+      local id, main
+      id, main = payload.id, payload.main
       self.id = id
       self.nodes = { }
       self.edges = { }
@@ -54,11 +68,9 @@ do
       self.running = false
       self.started = false
       self.start_time = nil
-      self.base_dir = baseDir
       return {
         id = self.id,
-        main = self.main,
-        baseDir = self.base_dir
+        main = self.main
       }
     end,
     debug = function(self, payload)
@@ -137,7 +149,6 @@ do
       self.running = false
       self.started = false
       self.start_time = nil
-      self.base_dir = nil
     end,
     __base = _base_0,
     __name = "Graph"
