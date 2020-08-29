@@ -252,7 +252,7 @@ class RuntimeMessages
         {}
 
       changenode: (options) ->
-        print "RuntimeMessages.graph.output.changenode:options", serpent.block options
+        -- print "RuntimeMessages.graph.output.changenode:options", serpent.block options
         {
           protocol: "graph"
           command: "changenode"

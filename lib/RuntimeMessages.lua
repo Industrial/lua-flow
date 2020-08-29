@@ -258,7 +258,6 @@ do
           return { }
         end,
         changenode = function(options)
-          print("RuntimeMessages.graph.output.changenode:options", serpent.block(options))
           return {
             protocol = "graph",
             command = "changenode",
