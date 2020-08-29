@@ -1,17 +1,32 @@
+serpent = require "serpent"
+
+JSON = require "JSON"
+
 class Node
   new: (options) =>
     -- print "Node#new"
 
-    @id = options.id
-    @metadata = options.metadata
+    @id = 'Node'
+    @metadata = {}
     @in_ports = {}
     @out_ports = {}
+
+    import id, metadata from options
+
+    @set_id id if id
+    @set_metadata metadata if metadata
 
   set_id: (id) =>
     @id = id
 
   set_metadata: (metadata) =>
-    @metadata = metadata
+    -- print "Node#set_metadata"
+
+    for k, v in pairs metadata
+      if JSON\is_null v
+        @metadata[k] = nil
+      else
+        @metadata[k] = v
 
   add_in_port: (port) =>
     -- print "Node#add_in_port"

@@ -1,10 +1,10 @@
 local http_headers = require("http.headers")
 local http_server = require("http.server")
 local http_websocket = require("http.websocket")
-local json = require("dkjson")
 local serpent = require("serpent")
-local RuntimeMessages = require("RuntimeMessages")
+local JSON = require("JSON")
 local Network = require("Network")
+local RuntimeMessages = require("RuntimeMessages")
 local Runtime
 do
   local _class_0
@@ -54,7 +54,7 @@ do
         headers = response_headers
       })
       for raw_input, raw_input_opcode in ws:each() do
-        local input, pos, err = json.decode(raw_input, 1, nil)
+        local input, pos, err = JSON:decode(raw_input)
         if err then
           print("Error: " .. tostring(err))
           ws:close()
@@ -67,7 +67,8 @@ do
         local handler = assert(handlers[command], "No handler for command '" .. tostring(command) .. "'")
         local output = assert((handler(self, payload)), "No output for command '" .. tostring(protocol) .. ":" .. tostring(command) .. "'")
         self:log_command_out(output)
-        ws:send((json.encode(output)), opcode)
+        local raw_output = JSON:encode(output)
+        ws:send(raw_output, opcode)
       end
       return ws:close()
     end,
@@ -111,13 +112,13 @@ do
             local _obj_0 = input_message.payload
             graph, metadata, src, tgt = _obj_0.graph, _obj_0.metadata, _obj_0.src, _obj_0.tgt
           end
-          graph = self.network:ensure_graph({
+          local result = (self.network:ensure_graph({
             id = graph
-          })
-          local result = graph:addedge({
+          })):addedge({
+            graph = graph,
+            metadata = metadata,
             src = src,
-            tgt = tgt,
-            metadata = metadata
+            tgt = tgt
           })
           local output_message = RuntimeMessages.graph.output.addedge(result)
           return output_message
@@ -129,19 +130,15 @@ do
             local _obj_0 = input_message.payload
             graph, id, node, metadata = _obj_0.graph, _obj_0.id, _obj_0.node, _obj_0.metadata
           end
-          (self.network:ensure_graph({
+          local result = (self.network:ensure_graph({
             id = graph
           })):addnode({
+            graph = graph,
             id = id,
             metadata = metadata,
             node = node
           })
-          local output_message = RuntimeMessages.graph.output.addnode({
-            id = id,
-            metadata = metadata,
-            node = node,
-            graph = graph
-          })
+          local output_message = RuntimeMessages.graph.output.addnode(result)
           return output_message
         end,
         changenode = function(self, payload)
@@ -151,10 +148,10 @@ do
             local _obj_0 = input_message.payload
             graph, id, metadata = _obj_0.graph, _obj_0.id, _obj_0.metadata
           end
-          graph = self.network:ensure_graph({
+          local result = (self.network:ensure_graph({
             id = graph
-          })
-          local result = graph:changenode({
+          })):changenode({
+            graph = graph,
             id = id,
             metadata = metadata
           })
@@ -163,12 +160,16 @@ do
         end,
         clear = function(self, payload)
           local input_message = RuntimeMessages.graph.input.clear(payload)
-          local id
-          id = input_message.payload.id
-          local graph = self.network:ensure_graph({
+          local id, graph
+          do
+            local _obj_0 = input_message.payload
+            id, graph = _obj_0.id, _obj_0.graph
+          end
+          local result = (self.network:ensure_graph({
+            id = id
+          })):clear({
             id = id
           })
-          local result = graph:clear(payload)
           local output_message = RuntimeMessages.graph.output.clear(result)
           return output_message
         end
@@ -195,7 +196,7 @@ do
       if options.log_commands then
         self.log_commands = options.log_commands
       end
-      self.log_command_contents = false
+      self.log_command_contents = true
       if options.log_command_contents then
         self.log_command_contents = options.log_command_contents
       end

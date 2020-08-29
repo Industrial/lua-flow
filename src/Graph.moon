@@ -21,11 +21,16 @@ class Graph
   addedge: (payload) =>
     -- print "Graph#addedge"
 
-    import src, tgt, metadata from payload
+    import src, tgt, metadata, graph from payload
 
     @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = Edge payload
 
-    payload
+    {
+      graph: graph
+      metadata: metadata
+      src: src
+      tgt: tgt
+    }
 
   addgroup: (payload) =>
     print "Graph#addgroup"
@@ -39,7 +44,7 @@ class Graph
   addnode: (payload) =>
     -- print "Graph#addnode"
 
-    import id, node, metadata from payload
+    import id, node, metadata, graph from payload
 
     node_dots = node\gsub "/", "."
 
@@ -52,6 +57,7 @@ class Graph
       metadata: metadata
 
     {
+      graph: graph
       id: id
       metadata: metadata
       node: node
@@ -67,17 +73,18 @@ class Graph
     print "Graph#changegroup"
 
   changenode: (payload) =>
-    print "Graph#changenode"
-    print "Graph#changenode:payload", serpent.block payload
+    -- print "Graph#changenode"
 
-    import id, metadata from payload
+    import id, metadata, graph from payload
 
-    print "Graph#changenode:id", id
-    print "Graph#changenode:metadata", serpent.block metadata
+    node = @nodes[id]
+    node\set_metadata metadata
 
-    @nodes[id]\set_metadata metadata
-
-    payload
+    {
+      graph: graph
+      id: id
+      metadata: node.metadata
+    }
 
   clear: (payload) =>
     -- print "Graph#clear"

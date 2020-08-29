@@ -6,10 +6,15 @@ do
   local _class_0
   local _base_0 = {
     addedge = function(self, payload)
-      local src, tgt, metadata
-      src, tgt, metadata = payload.src, payload.tgt, payload.metadata
+      local src, tgt, metadata, graph
+      src, tgt, metadata, graph = payload.src, payload.tgt, payload.metadata, payload.graph
       self.edges[self:get_edge_name(src.node, src.port, tgt.node, tgt.port)] = Edge(payload)
-      return payload
+      return {
+        graph = graph,
+        metadata = metadata,
+        src = src,
+        tgt = tgt
+      }
     end,
     addgroup = function(self, payload)
       return print("Graph#addgroup")
@@ -21,8 +26,8 @@ do
       return print("Graph#addinport")
     end,
     addnode = function(self, payload)
-      local id, node, metadata
-      id, node, metadata = payload.id, payload.node, payload.metadata
+      local id, node, metadata, graph
+      id, node, metadata, graph = payload.id, payload.node, payload.metadata, payload.graph
       local node_dots = node:gsub("/", ".")
       local require_path = "nodes." .. tostring(node_dots)
       local NodeClass = require(require_path)
@@ -31,6 +36,7 @@ do
         metadata = metadata
       })
       return {
+        graph = graph,
         id = id,
         metadata = metadata,
         node = node
@@ -46,14 +52,15 @@ do
       return print("Graph#changegroup")
     end,
     changenode = function(self, payload)
-      print("Graph#changenode")
-      print("Graph#changenode:payload", serpent.block(payload))
-      local id, metadata
-      id, metadata = payload.id, payload.metadata
-      print("Graph#changenode:id", id)
-      print("Graph#changenode:metadata", serpent.block(metadata))
-      self.nodes[id]:set_metadata(metadata)
-      return payload
+      local id, metadata, graph
+      id, metadata, graph = payload.id, payload.metadata, payload.graph
+      local node = self.nodes[id]
+      node:set_metadata(metadata)
+      return {
+        graph = graph,
+        id = id,
+        metadata = node.metadata
+      }
     end,
     clear = function(self, payload)
       local id, main

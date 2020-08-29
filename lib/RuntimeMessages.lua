@@ -216,7 +216,8 @@ do
             payload = {
               src = options.src,
               tgt = options.tgt,
-              metadata = options.metadata
+              metadata = options.metadata,
+              graph = options.graph
             }
           }
         end,
@@ -257,6 +258,7 @@ do
           return { }
         end,
         changenode = function(options)
+          print("RuntimeMessages.graph.output.changenode:options", serpent.block(options))
           return {
             protocol = "graph",
             command = "changenode",

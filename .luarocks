@@ -6,3 +6,4 @@ serpent
 http
 lbase64
 dkjson
+lua-cjson

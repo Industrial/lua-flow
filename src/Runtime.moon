@@ -1,11 +1,11 @@
 http_headers = require "http.headers"
 http_server = require "http.server"
 http_websocket = require "http.websocket"
-json = require "dkjson"
 serpent = require "serpent"
 
-RuntimeMessages = require "RuntimeMessages"
+JSON = require "JSON"
 Network = require "Network"
+RuntimeMessages = require "RuntimeMessages"
 
 class Runtime
   new: (options) =>
@@ -27,7 +27,7 @@ class Runtime
     if options.log_commands
       @log_commands = options.log_commands
 
-    @log_command_contents = false
+    @log_command_contents = true
     if options.log_command_contents
       @log_command_contents = options.log_command_contents
 
@@ -84,7 +84,7 @@ class Runtime
       headers: response_headers
 
     for raw_input, raw_input_opcode in ws\each!
-      input, pos, err = json.decode raw_input, 1, nil
+      input, pos, err = JSON\decode raw_input
 
       if err
         print "Error: #{err}"
@@ -101,7 +101,9 @@ class Runtime
 
       @log_command_out output
 
-      ws\send (json.encode output), opcode
+      raw_output = JSON\encode output
+
+      ws\send raw_output, opcode
 
     ws\close!
 
@@ -158,16 +160,13 @@ class Runtime
 
         import graph, metadata, src, tgt from input_message.payload
 
-        graph = @network\ensure_graph
-          id: graph
-
-        result = graph\addedge
+        result = (@network\ensure_graph id: graph)\addedge
+          graph: graph
+          metadata: metadata
           src: src
           tgt: tgt
-          metadata: metadata
 
         output_message = RuntimeMessages.graph.output.addedge result
-
         output_message
 
       addnode: (payload) =>
@@ -175,17 +174,13 @@ class Runtime
 
         import graph, id, node, metadata from input_message.payload
 
-        (@network\ensure_graph id: graph)\addnode
-          id: id
-          metadata: metadata
-          node: node
-
-        output_message = RuntimeMessages.graph.output.addnode
-          id: id
-          metadata: metadata
-          node: node
+        result = (@network\ensure_graph id: graph)\addnode
           graph: graph
+          id: id
+          metadata: metadata
+          node: node
 
+        output_message = RuntimeMessages.graph.output.addnode result
         output_message
 
       changenode: (payload) =>
@@ -193,25 +188,21 @@ class Runtime
 
         import graph, id, metadata from input_message.payload
 
-        graph = @network\ensure_graph
-          id: graph
-
-        result = graph\changenode
+        result = (@network\ensure_graph id: graph)\changenode
+          graph: graph
           id: id
           metadata: metadata
 
         output_message = RuntimeMessages.graph.output.changenode result
-
         output_message
 
       clear: (payload) =>
         input_message = RuntimeMessages.graph.input.clear payload
 
-        import id from input_message.payload
+        import id, graph from input_message.payload
 
-        graph = @network\ensure_graph id: id
-
-        result = graph\clear payload
+        result = (@network\ensure_graph id: id)\clear
+          id: id
 
         output_message = RuntimeMessages.graph.output.clear result
 

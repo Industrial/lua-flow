@@ -212,6 +212,7 @@ class RuntimeMessages
             src: options.src
             tgt: options.tgt
             metadata: options.metadata
+            graph: options.graph
         }
 
       addgroup: (options) ->
@@ -251,7 +252,7 @@ class RuntimeMessages
         {}
 
       changenode: (options) ->
-        -- print "RuntimeMessages.graph.output.changenode:options", serpent.block options
+        print "RuntimeMessages.graph.output.changenode:options", serpent.block options
         {
           protocol: "graph"
           command: "changenode"
