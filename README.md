@@ -13,61 +13,74 @@ and using fbp-protocol integration test suite to test the implementation.
 
 ### Commands
 
-| Subprotocol | Command       | Implemented              |
-|-------------|---------------|--------------------------|
-| Runtime     | getruntime    | :heavy_check_mark:       |
-| Runtime     | packet        | :heavy_multiplication_x: |
-| Runtime     | packetsent    | :heavy_multiplication_x: |
-| Runtime     | ports         | :heavy_multiplication_x: |
-| Runtime     | runtime       | :heavy_multiplication_x: |
-|-------------|---------------|--------------------------|
-| Component   | getsource     | :heavy_multiplication_x: |
-| Component   | list          | :heavy_multiplication_x: |
-| Component   | source        | :heavy_multiplication_x: |
-|-------------|---------------|--------------------------|
-| Graph       | addedge       | :heavy_multiplication_x: |
-| Graph       | addgroup      | :heavy_multiplication_x: |
-| Graph       | addinport     | :heavy_multiplication_x: |
-| Graph       | addnode       | :heavy_multiplication_x: |
-| Graph       | addoutport    | :heavy_multiplication_x: |
-| Graph       | changeedge    | :heavy_multiplication_x: |
-| Graph       | changegroup   | :heavy_multiplication_x: |
-| Graph       | changenode    | :heavy_multiplication_x: |
-| Graph       | clear         | :heavy_multiplication_x: |
-| Graph       | error         | :heavy_multiplication_x: |
-| Graph       | removeedge    | :heavy_multiplication_x: |
-| Graph       | removegroup   | :heavy_multiplication_x: |
-| Graph       | removeinitial | :heavy_multiplication_x: |
-| Graph       | removeinport  | :heavy_multiplication_x: |
-| Graph       | removenode    | :heavy_multiplication_x: |
-| Graph       | removeoutport | :heavy_multiplication_x: |
-| Graph       | renamegroup   | :heavy_multiplication_x: |
-| Graph       | renameinport  | :heavy_multiplication_x: |
-| Graph       | renamenode    | :heavy_multiplication_x: |
-| Graph       | renameoutport | :heavy_multiplication_x: |
-|-------------|---------------|--------------------------|
-| Network     | begingroup    | :heavy_multiplication_x: |
-| Network     | connect       | :heavy_multiplication_x: |
-| Network     | data          | :heavy_multiplication_x: |
-| Network     | debug         | :heavy_multiplication_x: |
-| Network     | disconnect    | :heavy_multiplication_x: |
-| Network     | edges         | :heavy_multiplication_x: |
-| Network     | endgroup      | :heavy_multiplication_x: |
-| Network     | error         | :heavy_multiplication_x: |
-| Network     | getstatus     | :heavy_multiplication_x: |
-| Network     | icon          | :heavy_multiplication_x: |
-| Network     | output        | :heavy_multiplication_x: |
-| Network     | persist       | :heavy_multiplication_x: |
-| Network     | processerror  | :heavy_multiplication_x: |
-| Network     | start         | :heavy_multiplication_x: |
-| Network     | started       | :heavy_multiplication_x: |
-| Network     | status        | :heavy_multiplication_x: |
-| Network     | stop          | :heavy_multiplication_x: |
-|-------------|---------------|--------------------------|
-| Trace       | clear         | :heavy_multiplication_x: |
-| Trace       | dump          | :heavy_multiplication_x: |
-| Trace       | start         | :heavy_multiplication_x: |
-| Trace       | stop          | :heavy_multiplication_x: |
+#### Runtime
+| Command       | Implemented              |
+|---------------|--------------------------|
+| getruntime    | :heavy_check_mark:       |
+| packet        | :heavy_multiplication_x: |
+| packetsent    | :heavy_multiplication_x: |
+| ports         | :heavy_multiplication_x: |
+| runtime       | :heavy_multiplication_x: |
+
+#### Component
+| Command       | Implemented              |
+|---------------|--------------------------|
+| getsource     | :heavy_multiplication_x: |
+| list          | :heavy_multiplication_x: |
+| source        | :heavy_multiplication_x: |
+
+#### Graph
+| Command       | Implemented              |
+|---------------|--------------------------|
+| addedge       | :heavy_multiplication_x: |
+| addgroup      | :heavy_multiplication_x: |
+| addinport     | :heavy_multiplication_x: |
+| addnode       | :heavy_multiplication_x: |
+| addoutport    | :heavy_multiplication_x: |
+| changeedge    | :heavy_multiplication_x: |
+| changegroup   | :heavy_multiplication_x: |
+| changenode    | :heavy_multiplication_x: |
+| clear         | :heavy_multiplication_x: |
+| error         | :heavy_multiplication_x: |
+| removeedge    | :heavy_multiplication_x: |
+| removegroup   | :heavy_multiplication_x: |
+| removeinitial | :heavy_multiplication_x: |
+| removeinport  | :heavy_multiplication_x: |
+| removenode    | :heavy_multiplication_x: |
+| removeoutport | :heavy_multiplication_x: |
+| renamegroup   | :heavy_multiplication_x: |
+| renameinport  | :heavy_multiplication_x: |
+| renamenode    | :heavy_multiplication_x: |
+| renameoutport | :heavy_multiplication_x: |
+
+#### Network
+| Command       | Implemented              |
+|---------------|--------------------------|
+| begingroup    | :heavy_multiplication_x: |
+| connect       | :heavy_multiplication_x: |
+| data          | :heavy_multiplication_x: |
+| debug         | :heavy_multiplication_x: |
+| disconnect    | :heavy_multiplication_x: |
+| edges         | :heavy_multiplication_x: |
+| endgroup      | :heavy_multiplication_x: |
+| error         | :heavy_multiplication_x: |
+| getstatus     | :heavy_multiplication_x: |
+| icon          | :heavy_multiplication_x: |
+| output        | :heavy_multiplication_x: |
+| persist       | :heavy_multiplication_x: |
+| processerror  | :heavy_multiplication_x: |
+| start         | :heavy_multiplication_x: |
+| started       | :heavy_multiplication_x: |
+| status        | :heavy_multiplication_x: |
+| stop          | :heavy_multiplication_x: |
+
+#### Trace
+| Command       | Implemented              |
+|---------------|--------------------------|
+| clear         | :heavy_multiplication_x: |
+| dump          | :heavy_multiplication_x: |
+| start         | :heavy_multiplication_x: |
+| stop          | :heavy_multiplication_x: |
 
 ## Future Plans
 
