@@ -18,12 +18,12 @@ class Graph
     @started = false
     @start_time = nil
 
-  addedge: (payload) =>
+  addedge: (options) =>
     -- print "Graph#addedge"
 
-    import src, tgt, metadata, graph from payload
+    import src, tgt, metadata, graph from options
 
-    @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = Edge payload
+    @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = Edge options
 
     {
       graph: graph
@@ -32,19 +32,32 @@ class Graph
       tgt: tgt
     }
 
-  addgroup: (payload) =>
+  addgroup: (options) =>
     print "Graph#addgroup"
 
-  addinitial: (payload) =>
-    print "Graph#addinitial"
+  addinitial: (options) =>
+    -- print "Graph#addinitial"
 
-  addinport: (payload) =>
+    import graph, metadata, src, tgt from options
+
+    -- TODO: metadata?
+
+    @initial["#{tgt.node}:#{tgt.port}"] = src
+
+    {
+      graph: graph
+      metadata: metadata
+      src: src
+      tgt: tgt
+    }
+
+  addinport: (options) =>
     print "Graph#addinport"
 
-  addnode: (payload) =>
+  addnode: (options) =>
     -- print "Graph#addnode"
 
-    import id, node, metadata, graph from payload
+    import id, node, metadata, graph from options
 
     node_dots = node\gsub "/", "."
 
@@ -63,19 +76,19 @@ class Graph
       node: node
     }
 
-  addoutport: (payload) =>
+  addoutport: (options) =>
     print "Graph#addoutport"
 
-  changeedge: (payload) =>
+  changeedge: (options) =>
     print "Graph#changeedge"
 
-  changegroup: (payload) =>
+  changegroup: (options) =>
     print "Graph#changegroup"
 
-  changenode: (payload) =>
+  changenode: (options) =>
     -- print "Graph#changenode"
 
-    import id, metadata, graph from payload
+    import id, metadata, graph from options
 
     node = @nodes[id]
     node\set_metadata metadata
@@ -86,10 +99,10 @@ class Graph
       metadata: node.metadata
     }
 
-  clear: (payload) =>
+  clear: (options) =>
     -- print "Graph#clear"
 
-    import id, main from payload
+    import id, main from options
 
     @id = id
     @nodes = {}
@@ -107,7 +120,7 @@ class Graph
       main: @main
     }
 
-  debug: (payload) =>
+  debug: (options) =>
     print "Graph#debug"
 
   get_edge_name: (src_node, src_port, tgt_node, tgt_port) =>
@@ -115,60 +128,60 @@ class Graph
 
     "#{src_node}:#{src_port}-#{tgt_node}:#{tgt_port}"
 
-  getedges: (payload) =>
+  getedges: (options) =>
     print "Graph#getedges"
 
-  getstatus: (payload) =>
+  getstatus: (options) =>
     print "Graph#getstatus"
 
-  list: (payload) =>
+  list: (options) =>
     print "Graph#list"
 
-  persist: (payload) =>
+  persist: (options) =>
     print "Graph#persist"
 
-  removeedge: (payload) =>
+  removeedge: (options) =>
     -- print "Graph#removeedge"
 
-    import src, tgt from payload
+    import src, tgt from options
 
     @edges[@get_edge_name src.node, src.port, tgt.node, tgt.port] = nil
 
-  removegroup: (payload) =>
+  removegroup: (options) =>
     print "Graph#removegroup"
 
-  removeinitial: (payload) =>
+  removeinitial: (options) =>
     print "Graph#removeinitial"
 
-  removeinport: (payload) =>
+  removeinport: (options) =>
     print "Graph#removeinport"
 
-  removenode: (payload) =>
+  removenode: (options) =>
     print "Graph#removenode"
 
-  removenodeedges: (payload) =>
+  removenodeedges: (options) =>
     print "Graph#removenodeedges"
 
-  removeoutport: (payload) =>
+  removeoutport: (options) =>
     print "Graph#removeoutport"
 
-  renameedge: (payload) =>
+  renameedge: (options) =>
     print "Graph#renameedge"
 
-  renamegroup: (payload) =>
+  renamegroup: (options) =>
     print "Graph#renamegroup"
 
-  renameinport: (payload) =>
+  renameinport: (options) =>
     print "Graph#renameinport"
 
-  renamenode: (payload) =>
+  renamenode: (options) =>
     print "Graph#renamenode"
 
-  renameoutport: (payload) =>
+  renameoutport: (options) =>
     print "Graph#renameoutport"
 
-  start: (payload) =>
+  start: (options) =>
     print "Graph#start"
 
-  stop: (payload) =>
+  stop: (options) =>
     print "Graph#stop"

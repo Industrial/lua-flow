@@ -101,8 +101,19 @@ class RuntimeMessages
         {}
 
       addinitial: (options) ->
-        print "RuntimeMessages.graph.input.addinitial:options", serpent.block options
-        {}
+        -- print "RuntimeMessages.graph.input.addinitial:options", serpent.block options
+        {
+          protocol: "graph"
+          command: "addinitial"
+          payload:
+            graph: options.graph
+            metadata: options.metadata
+            src:
+              data: options.src.data
+            tgt:
+              node: options.tgt.node
+              port: options.tgt.port
+        }
 
       addinport: (options) ->
         print "RuntimeMessages.graph.input.addinport:options", serpent.block options
@@ -220,8 +231,19 @@ class RuntimeMessages
         {}
 
       addinitial: (options) ->
-        print "RuntimeMessages.graph.output.addinitial:options", serpent.block options
-        {}
+        -- print "RuntimeMessages.graph.output.addinitial:options", serpent.block options
+        {
+          protocol: "graph"
+          command: "addinitial"
+          payload:
+            graph: options.graph
+            metadata: options.metadata
+            src:
+              data: options.src.data
+            tgt:
+              node: options.tgt.node
+              port: options.tgt.port
+        }
 
       addinport: (options) ->
         print "RuntimeMessages.graph.output.addinport:options", serpent.block options

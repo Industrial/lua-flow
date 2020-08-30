@@ -123,6 +123,24 @@ do
           local output_message = RuntimeMessages.graph.output.addedge(result)
           return output_message
         end,
+        addinitial = function(self, payload)
+          local input_message = RuntimeMessages.graph.input.addinitial(payload)
+          local graph, metadata, src, tgt
+          do
+            local _obj_0 = input_message.payload
+            graph, metadata, src, tgt = _obj_0.graph, _obj_0.metadata, _obj_0.src, _obj_0.tgt
+          end
+          local result = (self.network:ensure_graph({
+            id = graph
+          })):addinitial({
+            graph = graph,
+            metadata = metadata,
+            src = src,
+            tgt = tgt
+          })
+          local output_message = RuntimeMessages.graph.output.addinitial(result)
+          return output_message
+        end,
         addnode = function(self, payload)
           local input_message = RuntimeMessages.graph.input.addnode(payload)
           local graph, id, node, metadata

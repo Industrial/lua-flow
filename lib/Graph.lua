@@ -5,10 +5,10 @@ local Graph
 do
   local _class_0
   local _base_0 = {
-    addedge = function(self, payload)
+    addedge = function(self, options)
       local src, tgt, metadata, graph
-      src, tgt, metadata, graph = payload.src, payload.tgt, payload.metadata, payload.graph
-      self.edges[self:get_edge_name(src.node, src.port, tgt.node, tgt.port)] = Edge(payload)
+      src, tgt, metadata, graph = options.src, options.tgt, options.metadata, options.graph
+      self.edges[self:get_edge_name(src.node, src.port, tgt.node, tgt.port)] = Edge(options)
       return {
         graph = graph,
         metadata = metadata,
@@ -16,18 +16,26 @@ do
         tgt = tgt
       }
     end,
-    addgroup = function(self, payload)
+    addgroup = function(self, options)
       return print("Graph#addgroup")
     end,
-    addinitial = function(self, payload)
-      return print("Graph#addinitial")
+    addinitial = function(self, options)
+      local graph, metadata, src, tgt
+      graph, metadata, src, tgt = options.graph, options.metadata, options.src, options.tgt
+      self.initial[tostring(tgt.node) .. ":" .. tostring(tgt.port)] = src
+      return {
+        graph = graph,
+        metadata = metadata,
+        src = src,
+        tgt = tgt
+      }
     end,
-    addinport = function(self, payload)
+    addinport = function(self, options)
       return print("Graph#addinport")
     end,
-    addnode = function(self, payload)
+    addnode = function(self, options)
       local id, node, metadata, graph
-      id, node, metadata, graph = payload.id, payload.node, payload.metadata, payload.graph
+      id, node, metadata, graph = options.id, options.node, options.metadata, options.graph
       local node_dots = node:gsub("/", ".")
       local require_path = "nodes." .. tostring(node_dots)
       local NodeClass = require(require_path)
@@ -42,18 +50,18 @@ do
         node = node
       }
     end,
-    addoutport = function(self, payload)
+    addoutport = function(self, options)
       return print("Graph#addoutport")
     end,
-    changeedge = function(self, payload)
+    changeedge = function(self, options)
       return print("Graph#changeedge")
     end,
-    changegroup = function(self, payload)
+    changegroup = function(self, options)
       return print("Graph#changegroup")
     end,
-    changenode = function(self, payload)
+    changenode = function(self, options)
       local id, metadata, graph
-      id, metadata, graph = payload.id, payload.metadata, payload.graph
+      id, metadata, graph = options.id, options.metadata, options.graph
       local node = self.nodes[id]
       node:set_metadata(metadata)
       return {
@@ -62,9 +70,9 @@ do
         metadata = node.metadata
       }
     end,
-    clear = function(self, payload)
+    clear = function(self, options)
       local id, main
-      id, main = payload.id, payload.main
+      id, main = options.id, options.main
       self.id = id
       self.nodes = { }
       self.edges = { }
@@ -80,66 +88,66 @@ do
         main = self.main
       }
     end,
-    debug = function(self, payload)
+    debug = function(self, options)
       return print("Graph#debug")
     end,
     get_edge_name = function(self, src_node, src_port, tgt_node, tgt_port)
       return tostring(src_node) .. ":" .. tostring(src_port) .. "-" .. tostring(tgt_node) .. ":" .. tostring(tgt_port)
     end,
-    getedges = function(self, payload)
+    getedges = function(self, options)
       return print("Graph#getedges")
     end,
-    getstatus = function(self, payload)
+    getstatus = function(self, options)
       return print("Graph#getstatus")
     end,
-    list = function(self, payload)
+    list = function(self, options)
       return print("Graph#list")
     end,
-    persist = function(self, payload)
+    persist = function(self, options)
       return print("Graph#persist")
     end,
-    removeedge = function(self, payload)
+    removeedge = function(self, options)
       local src, tgt
-      src, tgt = payload.src, payload.tgt
+      src, tgt = options.src, options.tgt
       self.edges[self:get_edge_name(src.node, src.port, tgt.node, tgt.port)] = nil
     end,
-    removegroup = function(self, payload)
+    removegroup = function(self, options)
       return print("Graph#removegroup")
     end,
-    removeinitial = function(self, payload)
+    removeinitial = function(self, options)
       return print("Graph#removeinitial")
     end,
-    removeinport = function(self, payload)
+    removeinport = function(self, options)
       return print("Graph#removeinport")
     end,
-    removenode = function(self, payload)
+    removenode = function(self, options)
       return print("Graph#removenode")
     end,
-    removenodeedges = function(self, payload)
+    removenodeedges = function(self, options)
       return print("Graph#removenodeedges")
     end,
-    removeoutport = function(self, payload)
+    removeoutport = function(self, options)
       return print("Graph#removeoutport")
     end,
-    renameedge = function(self, payload)
+    renameedge = function(self, options)
       return print("Graph#renameedge")
     end,
-    renamegroup = function(self, payload)
+    renamegroup = function(self, options)
       return print("Graph#renamegroup")
     end,
-    renameinport = function(self, payload)
+    renameinport = function(self, options)
       return print("Graph#renameinport")
     end,
-    renamenode = function(self, payload)
+    renamenode = function(self, options)
       return print("Graph#renamenode")
     end,
-    renameoutport = function(self, payload)
+    renameoutport = function(self, options)
       return print("Graph#renameoutport")
     end,
-    start = function(self, payload)
+    start = function(self, options)
       return print("Graph#start")
     end,
-    stop = function(self, payload)
+    stop = function(self, options)
       return print("Graph#stop")
     end
   }

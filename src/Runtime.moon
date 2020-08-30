@@ -169,6 +169,20 @@ class Runtime
         output_message = RuntimeMessages.graph.output.addedge result
         output_message
 
+      addinitial: (payload) =>
+        input_message = RuntimeMessages.graph.input.addinitial payload
+
+        import graph, metadata, src, tgt from input_message.payload
+
+        result = (@network\ensure_graph id: graph)\addinitial
+          graph: graph
+          metadata: metadata
+          src: src
+          tgt: tgt
+
+        output_message = RuntimeMessages.graph.output.addinitial result
+        output_message
+
       addnode: (payload) =>
         input_message = RuntimeMessages.graph.input.addnode payload
 
