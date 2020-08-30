@@ -32,15 +32,16 @@ and using fbp-protocol integration test suite to test the implementation.
 #### Graph
 | Command       | Implemented              |
 |---------------|--------------------------|
-| addedge       | :heavy_multiplication_x: |
+| addedge       | :heavy_check_mark:       |
 | addgroup      | :heavy_multiplication_x: |
+| addinitial    | :heavy_check_mark:       |
 | addinport     | :heavy_multiplication_x: |
-| addnode       | :heavy_multiplication_x: |
+| addnode       | :heavy_check_mark:       |
 | addoutport    | :heavy_multiplication_x: |
 | changeedge    | :heavy_multiplication_x: |
 | changegroup   | :heavy_multiplication_x: |
-| changenode    | :heavy_multiplication_x: |
-| clear         | :heavy_multiplication_x: |
+| changenode    | :heavy_check_mark:       |
+| clear         | :heavy_check_mark:       |
 | error         | :heavy_multiplication_x: |
 | removeedge    | :heavy_multiplication_x: |
 | removegroup   | :heavy_multiplication_x: |
